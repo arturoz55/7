@@ -118,16 +118,17 @@ const DAILY = (() => {
   return out;
 })();
 
-/* Third-party wallets shown when the browser has none announced. */
+/* Third-party wallets shown when the browser has none announced.
+   Logos: @web3icons/core (MIT), "background" variant. */
 const WALLET_CATALOGUE = [
-  { name: 'MetaMask',        url: 'https://metamask.io/download/',          color: '#F6851B' },
-  { name: 'Rabby',           url: 'https://rabby.io/',                      color: '#7084FF' },
-  { name: 'Coinbase Wallet', url: 'https://www.coinbase.com/wallet',        color: '#0052FF' },
-  { name: 'Rainbow',         url: 'https://rainbow.me/',                    color: '#174299' },
-  { name: 'Phantom',         url: 'https://phantom.com/',                   color: '#AB9FF2' },
-  { name: 'Trust Wallet',    url: 'https://trustwallet.com/',               color: '#3375BB' },
-  { name: 'OKX Wallet',      url: 'https://www.okx.com/web3',               color: '#111111' },
-  { name: 'Zerion',          url: 'https://zerion.io/',                     color: '#2962EF' }
+  { name: 'MetaMask',        url: 'https://metamask.io/download/',          color: '#F6851B', logo: 'wallets/metamask.svg' },
+  { name: 'Rabby',           url: 'https://rabby.io/',                      color: '#7084FF', logo: 'wallets/rabby.svg' },
+  { name: 'Coinbase Wallet', url: 'https://www.coinbase.com/wallet',        color: '#0052FF', logo: 'wallets/coinbase.svg' },
+  { name: 'Rainbow',         url: 'https://rainbow.me/',                    color: '#174299', logo: 'wallets/rainbow.svg' },
+  { name: 'Phantom',         url: 'https://phantom.com/',                   color: '#AB9FF2', logo: 'wallets/phantom.svg' },
+  { name: 'Trust Wallet',    url: 'https://trustwallet.com/',               color: '#3375BB', logo: 'wallets/trust.svg' },
+  { name: 'OKX Wallet',      url: 'https://www.okx.com/web3',               color: '#111111', logo: 'wallets/okx.svg' },
+  { name: 'Zerion',          url: 'https://zerion.io/',                     color: '#2962EF', logo: 'wallets/zerion.svg' }
 ];
 
 const CHAINS = {

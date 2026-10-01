@@ -35,3 +35,5 @@ All tokens, websites and payments are fictional sample data (`data.js`).
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+Wallet logos in `wallets/` come from [@web3icons/core](https://github.com/0xa3k5/web3icons) (MIT) and remain trademarks of their owners; they are shown only to identify each wallet.

@@ -423,7 +423,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</pre>
-    <p>Fonts are served by Google Fonts under the SIL Open Font License.</p>`]
+    <p>Fonts are served by Google Fonts under the SIL Open Font License. Wallet logos come from @web3icons/core (MIT) and remain trademarks of their owners; they are used only to identify each wallet.</p>`]
 };
 
 VIEWS.docs = (q, sub = '') => {

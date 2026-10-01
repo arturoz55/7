@@ -184,7 +184,7 @@ main:focus, main:focus-visible { outline: none; }
 .wl-label { padding: 10px 8px 4px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--muted)); }
 .wl-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; text-align: left; width: 100%; transition: background-color .15s; }
 .wl-item:hover, .wl-item:focus-visible { background: rgb(var(--fg) / .05); }
-.wl-item img, .wl-glyph { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; }
+.wl-item img, .wl-glyph { object-fit: cover; overflow: hidden; width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; }
 .wl-glyph { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; }
 .wl-item > span:not(.wl-glyph) { flex: 1; font-size: 14px; font-weight: 500; }
 .wl-item small { font-size: 11px; color: rgb(var(--muted)); }

@@ -124,7 +124,7 @@ const App = (() => {
     list.innerHTML = (found.length ? `<div class="wl-label">Installed</div>` + found.map((e, i) =>
       `<button class="wl-item" role="listitem" data-i="${i}">${e.info.icon && /^data:image\//.test(e.info.icon) ? `<img src="${esc(e.info.icon)}" alt="">` : walletGlyph(e.info.name, '#6D5BFF')}<span>${esc(e.info.name)}</span><small class="on">Detected</small></button>`).join('') : '') +
       (cat.length ? `<div class="wl-label">${found.length ? 'More wallets' : 'No wallet detected · get one'}</div>` + cat.map(w =>
-      `<a class="wl-item" role="listitem" href="${w.url}" target="_blank" rel="noopener noreferrer">${walletGlyph(w.name, w.color)}<span>${esc(w.name)}</span><small>Install ${icon('ext', 'ic" style="width:11px;height:11px;vertical-align:-1px')}</small></a>`).join('') : '');
+      `<a class="wl-item" role="listitem" href="${w.url}" target="_blank" rel="noopener noreferrer">${w.logo ? `<img src="${w.logo}" alt="" width="34" height="34" loading="lazy">` : walletGlyph(w.name, w.color)}<span>${esc(w.name)}</span><small>Install ${icon('ext', 'ic" style="width:11px;height:11px;vertical-align:-1px')}</small></a>`).join('') : '');
     document.getElementById('wm-empty').hidden = !!(found.length || cat.length);
     list._found = found;
   }
