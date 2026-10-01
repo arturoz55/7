@@ -306,7 +306,7 @@ svg.bgpat { position: absolute; inset: 0; width: 100%; height: 100%; }
 .tok:hover .letter { transform: scale(1.08) rotate(-3deg); }
 .tok-mark { position: relative; width: 58px; height: 58px; fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
   filter: drop-shadow(0 4px 14px rgb(0 0 0 / .4)); transition: transform .4s var(--ease); }
-.tok-logo { position: relative; width: 64px; height: 64px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 6px 20px rgb(0 0 0 / .35); transition: transform .4s var(--ease); }
+.tok-logo { position: relative; width: 72px; height: 72px; border-radius: 17px; object-fit: cover; box-shadow: 0 10px 26px rgb(0 0 0 / .45); transition: transform .4s var(--ease); }
 .tok:hover .tok-logo { transform: scale(1.08) rotate(-3deg); }
 .tok:hover .tok-mark { transform: scale(1.1) rotate(-4deg); }
 .mark { width: 58%; height: 58%; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -503,3 +503,8 @@ input[type="range"] { accent-color: rgb(var(--accent)); width: 100%; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .w, .rv { opacity: 1; transform: none; filter: none; }
 }
+
+/* real logo images in avatars */
+.has-img { background: transparent !important; overflow: hidden; padding: 0; }
+.has-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.badge-img { width: 14px; height: 14px; border-radius: 4px; }

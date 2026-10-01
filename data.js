@@ -60,18 +60,18 @@ const STATS = [
 
 /* Fictional websites. hue drives the generated art and avatar color. */
 const SITES = [
-  { name: 'Lumen Notes',    owner: 'lumennotes.app',   domain: 'lumennotes.app',   hue: 262, logo: 'sun', claimed: true,  received: 18420.55, tokens: 3 },
-  { name: 'Parcel Post',    owner: 'parcelpost.io',    domain: 'parcelpost.io',    hue: 18, logo: 'box',  claimed: true,  received: 9310.20,  tokens: 2 },
-  { name: 'Fieldkit',       owner: 'fieldkit.dev',     domain: 'fieldkit.dev',     hue: 150, logo: 'leaf', claimed: true,  received: 7442.90,  tokens: 2 },
-  { name: 'Harbor Radio',   owner: 'harbor.fm',        domain: 'harbor.fm',        hue: 205, logo: 'anchor', claimed: false, received: 0,        tokens: 1, owed: 1260.40 },
-  { name: 'Quietbox',       owner: 'quietbox.co',      domain: 'quietbox.co',      hue: 330, logo: 'moon', claimed: true,  received: 5120.00,  tokens: 1 },
-  { name: 'Tinyforms',      owner: 'tinyforms.so',     domain: 'tinyforms.so',     hue: 45, logo: 'check',  claimed: false, received: 0,        tokens: 1, owed: 842.10 },
-  { name: 'Orbit Maps',     owner: 'orbitmaps.net',    domain: 'orbitmaps.net',    hue: 185, logo: 'orbit', claimed: true,  received: 3980.75,  tokens: 1 },
-  { name: 'Grainline',      owner: 'grainline.shop',   domain: 'grainline.shop',   hue: 30, logo: 'wheat',  claimed: false, received: 0,        tokens: 1, owed: 512.00 },
-  { name: 'Kilnworks',      owner: 'kilnworks.studio', domain: 'kilnworks.studio', hue: 8, logo: 'flame',   claimed: true,  received: 2210.30,  tokens: 1 },
-  { name: 'Patchbay',       owner: 'patchbay.audio',   domain: 'patchbay.audio',   hue: 280, logo: 'wave', claimed: false, received: 0,        tokens: 1, owed: 301.65 },
-  { name: 'Northwind Reads',owner: 'northwind.pub',    domain: 'northwind.pub',    hue: 220, logo: 'compass', claimed: true,  received: 1640.00,  tokens: 1 },
-  { name: 'Sprout Kit',     owner: 'sproutkit.garden', domain: 'sproutkit.garden', hue: 110, logo: 'sprout', claimed: false, received: 0,        tokens: 1, owed: 220.00 }
+  { name: 'Lumen Notes',    owner: 'lumennotes.app',   domain: 'lumennotes.app',   hue: 262, logo: 'sun', logoImg: 'logos/lumen.svg', claimed: true,  received: 18420.55, tokens: 3 },
+  { name: 'Parcel Post',    owner: 'parcelpost.io',    domain: 'parcelpost.io',    hue: 18, logo: 'box', logoImg: 'logos/parcel.svg',  claimed: true,  received: 9310.20,  tokens: 2 },
+  { name: 'Fieldkit',       owner: 'fieldkit.dev',     domain: 'fieldkit.dev',     hue: 150, logo: 'leaf', logoImg: 'logos/field.svg', claimed: true,  received: 7442.90,  tokens: 2 },
+  { name: 'Harbor Radio',   owner: 'harbor.fm',        domain: 'harbor.fm',        hue: 205, logo: 'anchor', logoImg: 'logos/harbor.svg', claimed: false, received: 0,        tokens: 1, owed: 1260.40 },
+  { name: 'Quietbox',       owner: 'quietbox.co',      domain: 'quietbox.co',      hue: 330, logo: 'moon', logoImg: 'logos/quiet.svg', claimed: true,  received: 5120.00,  tokens: 1 },
+  { name: 'Tinyforms',      owner: 'tinyforms.so',     domain: 'tinyforms.so',     hue: 45, logo: 'check', logoImg: 'logos/forms.svg',  claimed: false, received: 0,        tokens: 1, owed: 842.10 },
+  { name: 'Orbit Maps',     owner: 'orbitmaps.net',    domain: 'orbitmaps.net',    hue: 185, logo: 'orbit', logoImg: 'logos/orbit.svg', claimed: true,  received: 3980.75,  tokens: 1 },
+  { name: 'Grainline',      owner: 'grainline.shop',   domain: 'grainline.shop',   hue: 30, logo: 'wheat', logoImg: 'logos/grain.svg',  claimed: false, received: 0,        tokens: 1, owed: 512.00 },
+  { name: 'Kilnworks',      owner: 'kilnworks.studio', domain: 'kilnworks.studio', hue: 8, logo: 'flame', logoImg: 'logos/kiln.svg',   claimed: true,  received: 2210.30,  tokens: 1 },
+  { name: 'Patchbay',       owner: 'patchbay.audio',   domain: 'patchbay.audio',   hue: 280, logo: 'wave', logoImg: 'logos/patch.svg', claimed: false, received: 0,        tokens: 1, owed: 301.65 },
+  { name: 'Northwind Reads',owner: 'northwind.pub',    domain: 'northwind.pub',    hue: 220, logo: 'compass', logoImg: 'logos/north.svg', claimed: true,  received: 1640.00,  tokens: 1 },
+  { name: 'Sprout Kit',     owner: 'sproutkit.garden', domain: 'sproutkit.garden', hue: 110, logo: 'sprout', logoImg: 'logos/sprout.svg', claimed: false, received: 0,        tokens: 1, owed: 220.00 }
 ];
 
 /* Deterministic pseudo-addresses so links stay stable between visits. */
@@ -88,6 +88,22 @@ function fakeAddr(seed) {
    Put the file in logos/ and map the ticker to it, e.g.  LUMEN: 'logos/lumen.png'.
    A token with no entry here (or whose file fails to load) shows its line-art mark. */
 const TOKEN_IMAGES = {
+  LUMEN: 'logos/lumen.svg',
+  PARCEL: 'logos/parcel.svg',
+  FIELD: 'logos/field.svg',
+  HARBOR: 'logos/harbor.svg',
+  QUIET: 'logos/quiet.svg',
+  FORMS: 'logos/forms.svg',
+  ORBIT: 'logos/orbit.svg',
+  GRAIN: 'logos/grain.svg',
+  KILN: 'logos/kiln.svg',
+  PATCH: 'logos/patch.svg',
+  NORTH: 'logos/north.svg',
+  SPROUT: 'logos/sprout.svg',
+  NOTES: 'logos/notes.svg',
+  POST: 'logos/post.svg',
+  KIT: 'logos/kit.svg',
+  LUX: 'logos/lux.svg',
 };
 
 const TOKEN_LOGO = {'LUMEN': 'sun', 'PARCEL': 'box', 'FIELD': 'leaf', 'HARBOR': 'anchor', 'QUIET': 'moon', 'FORMS': 'check', 'ORBIT': 'orbit', 'GRAIN': 'wheat', 'KILN': 'flame', 'PATCH': 'wave', 'NORTH': 'compass', 'SPROUT': 'sprout', 'NOTES': 'book', 'POST': 'mail', 'KIT': 'bag', 'LUX': 'star'};

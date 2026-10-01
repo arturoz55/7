@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B3A67"/><stop offset="1" stop-color="#141B33"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<radialGradient id="vig" cx=".5" cy=".42" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2.2" stdDeviation="2.2" flood-color="#000" flood-opacity=".38"/></filter>
+<clipPath id="tile"><rect width="100" height="100" rx="23"/></clipPath>
+<linearGradient id="top" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2C88E"/><stop offset="1" stop-color="#D9A066"/></linearGradient><linearGradient id="lft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C98B4E"/><stop offset="1" stop-color="#A86E38"/></linearGradient><linearGradient id="rgt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A6331"/><stop offset="1" stop-color="#7A4C24"/></linearGradient>
+</defs>
+<g clip-path="url(#tile)">
+<rect width="100" height="100" fill="url(#bg)"/>
+<rect width="100" height="100" fill="url(#vig)"/>
+<g filter="url(#sh)"><polygon points="50,18 80,34 50,50 20,34" fill="url(#top)"/><polygon points="20,34 50,50 50,84 20,68" fill="url(#lft)"/><polygon points="50,50 80,34 80,68 50,84" fill="url(#rgt)"/><polygon points="31.5,40.1 61.5,24.1 68.5,27.9 38.5,43.9" fill="#E9E4D8" opacity=".9"/><polygon points="31.5,40.1 38.5,43.9 38.5,77.9 31.5,74.1" fill="#D4CEC0" opacity=".9"/><polyline points="20,34 50,50 80,34" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width=".8"/></g>
+<rect width="100" height="56" fill="url(#gloss)"/>
+</g>
+<rect x=".5" y=".5" width="99" height="99" rx="22.5" fill="none" stroke="#fff" stroke-opacity=".14"/>
+</svg>

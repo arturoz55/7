@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9A3C"/><stop offset="1" stop-color="#E2451F"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<radialGradient id="vig" cx=".5" cy=".42" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2.2" stdDeviation="2.2" flood-color="#000" flood-opacity=".38"/></filter>
+<clipPath id="tile"><rect width="100" height="100" rx="23"/></clipPath>
+<linearGradient id="ray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3C4"/><stop offset="1" stop-color="#FFC547"/></linearGradient><radialGradient id="core" cx="0.38" cy="0.32" r="0.75"><stop offset="0" stop-color="#FFFBE6"/><stop offset="1" stop-color="#FFB21E"/></radialGradient>
+</defs>
+<g clip-path="url(#tile)">
+<rect width="100" height="100" fill="url(#bg)"/>
+<rect width="100" height="100" fill="url(#vig)"/>
+<g filter="url(#sh)"><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(0 50 50)"/><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(45 50 50)"/><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(90 50 50)"/><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(135 50 50)"/><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(180 50 50)"/><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(225 50 50)"/><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(270 50 50)"/><rect x="47" y="12" width="6" height="15" rx="3" fill="url(#ray)" transform="rotate(315 50 50)"/><circle cx="50" cy="50" r="16" fill="url(#core)"/><circle cx="45" cy="44" r="5" fill="#fff" opacity=".55"/></g>
+<rect width="100" height="56" fill="url(#gloss)"/>
+</g>
+<rect x=".5" y=".5" width="99" height="99" rx="22.5" fill="none" stroke="#fff" stroke-opacity=".14"/>
+</svg>

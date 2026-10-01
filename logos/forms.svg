@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC93C"/><stop offset="1" stop-color="#F08C00"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<radialGradient id="vig" cx=".5" cy=".42" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2.2" stdDeviation="2.2" flood-color="#000" flood-opacity=".38"/></filter>
+<clipPath id="tile"><rect width="100" height="100" rx="23"/></clipPath>
+<linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9ECF2"/></linearGradient><linearGradient id="ck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2EC27E"/><stop offset="1" stop-color="#11865A"/></linearGradient>
+</defs>
+<g clip-path="url(#tile)">
+<rect width="100" height="100" fill="url(#bg)"/>
+<rect width="100" height="100" fill="url(#vig)"/>
+<g filter="url(#sh)"><rect x="23" y="23" width="54" height="54" rx="13" fill="url(#pp)"/><path d="M36 51 L 46 61 L 65 39" fill="none" stroke="url(#ck)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+<rect width="100" height="56" fill="url(#gloss)"/>
+</g>
+<rect x=".5" y=".5" width="99" height="99" rx="22.5" fill="none" stroke="#fff" stroke-opacity=".14"/>
+</svg>
