@@ -273,6 +273,29 @@ const App = (() => {
       if (saved) return;
       root.classList.remove('light', 'dark'); root.classList.add(ev.matches ? 'light' : 'dark');
     });
+    /* live market: update every visible card and price for the token that moved */
+    Market.on((ev) => {
+      const t = ev.t;
+      document.querySelectorAll(`[data-tok="${CSS.escape(t.ticker)}"]`).forEach(el => {
+        const cap = el.querySelector('.cap-v'), chg = el.querySelector('.chg');
+        if (cap) cap.textContent = '$' + compact(t.mcap);
+        if (chg) { chg.textContent = fmtChg(t.change); chg.classList.toggle('neg', t.change < 0); }
+        const m = el.querySelector('.meter i'); if (m && t.stage !== 'bonded') { m.style.width = t.curve + '%'; const c = el.querySelector('.curve span:last-child'); if (c) c.textContent = t.curve + '%'; }
+        el.classList.remove('flash-up', 'flash-down'); void el.offsetWidth; el.classList.add(ev.up ? 'flash-up' : 'flash-down');
+      });
+    });
+    Market.start();
+    FX.initTilt();
+    /* watchlist stars (inside links, so stop navigation) */
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-star]'); if (!b) return;
+      e.preventDefault(); e.stopPropagation();
+      const on = Watch.toggle(b.dataset.star);
+      document.querySelectorAll(`[data-star="${CSS.escape(b.dataset.star)}"]`).forEach(x => { x.setAttribute('aria-pressed', String(on)); x.textContent = on ? '★' : '☆'; });
+      b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+      toast(on ? `Watching ${b.dataset.star}` : `Removed ${b.dataset.star} from watchlist`);
+      main.dispatchEvent(new CustomEvent('watchchange'));
+    }, true);
     window.addEventListener('hashchange', render);
     render();
   }

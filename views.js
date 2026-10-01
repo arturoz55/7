@@ -43,17 +43,25 @@ const avatar = (name, hue, cls = 'av', logo, img) => img
   ? `<span class="${cls} has-img"><img src="${esc(img)}" alt=""></span>`
   : `<span class="${cls}" style="background:${color(hue)}">${logo && MARKS[logo] ? mark(logo) : esc(name[0])}</span>`;
 
+const fmtChg = (c) => (c > 0 ? '+' : '') + c.toFixed(1) + '%';
+const starBtn = (k) => `<button type="button" class="star" data-star="${esc(k)}" aria-pressed="${Watch.has(k)}" aria-label="Watch ${esc(k)}" title="Add to watchlist">${Watch.has(k) ? '★' : '☆'}</button>`;
+const tradeRow = (ev) => {
+  const t = ev.t;
+  return `<a class="trade ${ev.side}" href="#/token/${t.address}">${t.logoImg ? `<img src="${esc(t.logoImg)}" alt="">` : `<span class="mini" style="background:${color(t.hue)};width:20px;height:20px;font-size:10px">${esc(t.ticker[0])}</span>`}
+    <span class="mono">${short(ev.who)}</span><b>${ev.side === 'buy' ? 'bought' : 'sold'}</b><span class="num">${usd(ev.usd)}</span><span class="muted">${esc(t.ticker)}</span></a>`;
+};
+
 function tokenCard(t, i = 0) {
   const s = findSite(t.site);
   const claimed = s && s.claimed;
-  return `<a class="tok" href="#/token/${t.address}" style="animation-delay:${i * 40}ms">
+  return `<a class="tok" href="#/token/${t.address}" data-tok="${esc(t.ticker)}" style="animation-delay:${i * 40}ms">
     <div class="tok-art">${t.image ? `<img src="${esc(t.image)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : art(t.hue, t.ticker)}
       <span class="badge tl"><i></i>${esc(t.pair)}</span><span class="badge tr">${esc(t.age)}</span>
       ${t.image ? '' : t.logoImg ? `<img class="tok-logo" src="${esc(t.logoImg)}" alt="${esc(t.name)} logo" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'letter',textContent:${esc(JSON.stringify(t.ticker[0]))}}))">` : t.logo && MARKS[t.logo] ? mark(t.logo, 'tok-mark') : `<span class="letter">${esc(t.ticker[0])}</span>`}
       <span class="badge bl">${s && s.logoImg ? `<img class="badge-img" src="${esc(s.logoImg)}" alt="">` : s && s.logo ? `<span class="badge-av" style="background:${color(s.hue)}">${mark(s.logo)}</span>` : icon('globe', 'ic" style="width:10px;height:10px')}${esc(s ? s.name : t.site)}</span></div>
     <div class="tok-body">
-      <div class="tok-name">${esc(t.name)} <small>${esc(t.ticker)}</small></div>
-      <div class="tok-cap num">$${compact(t.mcap)} <small>MC</small><span class="chg ${t.change < 0 ? 'neg' : ''}">${t.change > 0 ? '+' : ''}${t.change.toFixed(1)}%</span></div>
+      <div class="tok-name">${esc(t.name)} <small>${esc(t.ticker)}</small>${starBtn(t.ticker)}</div>
+      <div class="tok-cap num"><span class="cap-v">$${compact(t.mcap)}</span> <small>MC</small><span class="chg ${t.change < 0 ? 'neg' : ''}">${fmtChg(t.change)}</span></div>
       <div class="curve"><span>${t.stage === 'bonded' ? 'Bonded' : 'Bonding curve'}</span><span>${t.curve}%</span></div>
       <div class="meter"><i data-w="${t.curve}"></i></div>
       <div class="tok-foot"><i class="g"></i><span class="num">${compact(t.holders)}</span><span class="sep"></span><span class="num muted">${t.paid ? usd(t.paid, 0) : '$0'}</span></div>
@@ -106,6 +114,7 @@ VIEWS.home = () => {
         <p class="hero-sub">Every trade on a Conduit token pays a small creator fee. Instead of a wallet, that fee is pointed at a real website, converted to dollars and paid out to its bank, card account or USDC wallet.
           Built for <a class="chip" href="#/docs/how"><i></i>EVM chains</a> with <a class="chip" href="#/flow"><i style="background:rgb(var(--accent))"></i>open payouts</a></p>
         <div class="hero-cta"><a class="btn btn-solid shine" href="#/launch">Launch a token</a><a class="btn btn-line" href="#/docs">Read the docs</a></div>
+        <div class="live-strip" aria-label="Live trades"><span class="live-dot">Live</span><div class="live-track" id="live-track"></div></div>
       </section>
 
       <section class="rv">
@@ -150,6 +159,12 @@ VIEWS.home = () => {
       </section>
     </div>`,
     mount(root, ctx) {
+      /* live trade strip */
+      const track = root.querySelector('#live-track');
+      const push = (ev) => { track.insertAdjacentHTML('afterbegin', tradeRow(ev)); while (track.children.length > 14) track.lastElementChild.remove(); };
+      for (let i = 0; i < 6; i++) { const t = TOKENS[(i * 5) % TOKENS.length]; push({ t, side: i % 3 ? 'buy' : 'sell', usd: 40 + i * 37.5, who: t.address.slice(0, 2) + t.address.slice(10, 48), at: Date.now() }); }
+      ctx.on(Market.on(push));
+      ctx.on(FX.spotlight(root.querySelector('.hero')));
       /* rotating destination word */
       const spans = [...root.querySelectorAll('#rot > span')]; let k = 0;
       ctx.every(2600, () => { const cur = spans[k]; k = (k + 1) % spans.length; const nx = spans[k];
@@ -179,22 +194,25 @@ VIEWS.home = () => {
 VIEWS.explore = (q) => ({
   title: 'Explore — Conduit',
   html: `<div class="page"><div class="page-head"><h1 class="display">Explore</h1><p>Every token listed on Conduit and the website its fees are pointed at.</p></div>
-    <div class="bar"><div class="seg" id="ex-stage"><button aria-pressed="true" data-v="all">All</button><button aria-pressed="false" data-v="graduating">Graduating</button><button aria-pressed="false" data-v="bonded">Bonded</button></div>
+    <div class="bar"><div class="seg" id="ex-stage"><button aria-pressed="true" data-v="all">All</button><button aria-pressed="false" data-v="graduating">Graduating</button><button aria-pressed="false" data-v="bonded">Bonded</button><button aria-pressed="false" data-v="watch">★ Watchlist</button></div>
       <label class="field" style="margin:0;flex:1;max-width:280px">${icon('search')}<input id="ex-q" type="search" placeholder="Filter by name or site" value="${esc(q.q || '')}"></label>
       <select class="inp" id="ex-sort" style="width:auto;height:38px;margin-left:auto"><option value="mcap">Market cap</option><option value="paid">Most paid out</option><option value="new">Newest</option></select></div>
-    <div class="tok-grid" id="ex-grid"></div><div class="empty" id="ex-empty" hidden><b>No tokens match</b><p>Try another name, ticker or website.</p></div></div>`,
+    <div class="tok-grid" id="ex-grid"></div><div class="empty" id="ex-empty" hidden><b id="ex-empty-t">No tokens match</b><p id="ex-empty-p">Try another name, ticker or website.</p></div></div>`,
   mount(root) {
     let stage = 'all';
     const grid = root.querySelector('#ex-grid'), qi = root.querySelector('#ex-q'), so = root.querySelector('#ex-sort'), empty = root.querySelector('#ex-empty');
     const paint = () => {
       const q = qi.value.trim().toLowerCase();
-      const list = sortTokens([...localTokens(), ...TOKENS].filter(t => (stage === 'all' || t.stage === stage) &&
+      const list = sortTokens([...localTokens(), ...TOKENS].filter(t => (stage === 'all' || (stage === 'watch' ? Watch.has(t.ticker) : t.stage === stage)) &&
         (!q || [t.name, t.ticker, t.site].some(x => x.toLowerCase().includes(q)))), so.value);
       grid.innerHTML = list.map(tokenCard).join(''); empty.hidden = list.length > 0; App.fillMeters(grid);
+      root.querySelector('#ex-empty-t').textContent = stage === 'watch' ? 'Your watchlist is empty' : 'No tokens match';
+      root.querySelector('#ex-empty-p').textContent = stage === 'watch' ? 'Tap the ☆ on any token to follow it here.' : 'Try another name, ticker or website.';
     };
     root.querySelector('#ex-stage').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
       b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); stage = b.dataset.v; paint(); });
     qi.addEventListener('input', paint); so.addEventListener('change', paint); paint();
+    root.addEventListener('watchchange', () => { if (stage === 'watch') paint(); });
   }
 });
 
@@ -359,7 +377,7 @@ VIEWS.launch = () => ({
         catch (err) { t.image = null; list[0] = t; try { sessionStorage.setItem('conduit:launched', JSON.stringify(list)); } catch (e2) {} }
         done.innerHTML = `<div class="panel" style="margin-top:12px"><b>Launched (demo)</b><p class="muted" style="font-size:13px;margin-top:6px">Signed by ${short(Wallet.state.address)}. It now appears in Explore for this browser session.</p>
           <p class="mono muted" style="font-size:11px;margin-top:8px;word-break:break-all">${esc(sig)}</p><a class="btn btn-line sm" style="margin-top:12px" href="#/token/${t.address}">View token →</a></div>`;
-        App.toast('Signed. Your token is live in this demo.');
+        App.toast('Signed. Your token is live in this demo.'); FX.confetti();
         f.reset(); image = null; drop.textContent = 'Drop an image or click to choose'; preview();
       } catch (err) {
         App.toast(err && err.code === 4001 ? 'Signature declined.' : (err && err.message) || 'Signing failed.');
@@ -445,17 +463,128 @@ VIEWS.token = (q, addr) => {
   const s = findSite(t.site);
   return {
     title: `${t.name} (${t.ticker}) — Conduit`,
-    html: `<div class="page"><a class="link" href="#/explore">← Explore</a><div class="detail" style="margin-top:16px">
-      <div>${tokenCard(t).replace(/^<a class="tok"[^>]*>/, '<div class="tok">').replace(/<\/a>$/, '</div>')}</div>
-      <div><h1 class="display" style="font-size:40px;letter-spacing:-.03em">${esc(t.name)} <span class="muted mono" style="font-size:18px">${esc(t.ticker)}</span></h1>
-        <p class="muted" style="margin-top:6px">Fees go to <a class="accent" href="#/site/${esc(t.site)}">${esc(s ? s.name : t.site)}</a>${t.local ? ' · launched in this browser' : ''}</p>
-        <div class="grid3" style="margin-top:20px"><div class="panel kpi"><div class="k">Market cap</div><div class="v num">$${compact(t.mcap)}</div></div>
-          <div class="panel kpi"><div class="k">Holders</div><div class="v num">${compact(t.holders)}</div></div>
-          <div class="panel kpi"><div class="k">Paid to site</div><div class="v num">${usd(t.paid, 0)}</div></div></div>
-        <div class="panel" style="margin-top:12px"><div class="kv"><span>Contract</span><span><button class="copy" data-copy="${t.address}">${short(t.address)} ${icon('copy', 'ic" style="width:12px;height:12px')}</button></span>
-          <span>Stage</span><span>${t.stage === 'bonded' ? 'Bonded' : 'Bonding curve · ' + t.curve + '%'}</span><span>Paired with</span><span>${esc(t.pair)}</span>
-          <span>Creator fee</span><span>${(t.fee || 1).toFixed(2)}%</span><span>Age</span><span>${esc(t.age)}</span>${t.creator ? `<span>Creator</span><span class="mono">${short(t.creator)}</span>` : ''}</div></div>
-      </div></div></div>`
+    html: `<div class="page"><a class="link" href="#/explore">← Explore</a>
+      <div class="tk-head"><div class="tk-id">${t.logoImg ? `<img src="${esc(t.logoImg)}" alt="" class="tk-logo">` : `<span class="mini tk-logo" style="background:${color(t.hue)}">${esc(t.ticker[0])}</span>`}
+        <div><h1 class="display">${esc(t.name)} <span class="muted mono">${esc(t.ticker)}</span></h1>
+        <p class="muted">Fees go to <a class="accent" href="#/site/${esc(t.site)}">${esc(s ? s.name : t.site)}</a>${t.local ? ' · launched in this browser' : ''}</p></div></div>
+        <div class="tk-price" data-tok="${esc(t.ticker)}"><div class="cap-v num">$${compact(t.mcap)}</div><span class="chg ${t.change < 0 ? 'neg' : ''}">${fmtChg(t.change)}</span>${starBtn(t.ticker)}</div></div>
+      <div class="tk-grid">
+        <div class="tk-main">
+          <div class="panel chart-panel"><div class="chart-top"><div><div class="k muted" style="font-size:12px">Market cap</div><div class="num chart-val" id="ch-val">$${compact(t.mcap)}</div><div class="muted" id="ch-when" style="font-size:12px">Now</div></div>
+            <div class="seg" id="ch-range"><button aria-pressed="false" data-n="8">2H</button><button aria-pressed="false" data-n="24">6H</button><button aria-pressed="true" data-n="96">1D</button><button aria-pressed="false" data-n="0">All</button></div></div>
+            <div class="chart" id="chart"><svg id="ch-svg" viewBox="0 0 600 220" preserveAspectRatio="none"></svg><div class="ch-cross" id="ch-cross" hidden></div><div class="ch-dot" id="ch-dot" hidden></div></div></div>
+          <div class="grid3" style="margin-top:12px"><div class="panel kpi"><div class="k">Holders</div><div class="v num" id="tk-holders">${compact(t.holders)}</div></div>
+            <div class="panel kpi"><div class="k">Paid to site</div><div class="v num" id="tk-paid">${usd(t.paid, 0)}</div></div>
+            <div class="panel kpi"><div class="k">${t.stage === 'bonded' ? 'Stage' : 'Bonding curve'}</div><div class="v num" id="tk-curve">${t.stage === 'bonded' ? 'Bonded' : t.curve + '%'}</div></div></div>
+          <div class="panel" style="margin-top:12px"><div class="k muted" style="font-size:13px;margin-bottom:8px">Recent trades</div><div class="tk-trades" id="tk-trades"><p class="muted" style="font-size:13px">Waiting for the next trade…</p></div></div>
+        </div>
+        <aside class="tk-side">
+          <form class="panel trade-box" id="trade" novalidate>
+            <div class="seg full" id="tr-side"><button type="button" aria-pressed="true" data-v="buy">Buy</button><button type="button" aria-pressed="false" data-v="sell">Sell</button></div>
+            <label class="tr-in"><span id="tr-lbl">You pay</span><div class="tr-field"><input id="tr-amt" class="num" type="number" inputmode="decimal" min="0" step="any" placeholder="0.00"><b id="tr-unit">USD</b></div></label>
+            <div class="chips" id="tr-quick"></div>
+            <div class="kv tr-quote" id="tr-quote"></div>
+            <button class="btn btn-accent shine" type="submit" id="tr-go" style="width:100%">Connect wallet</button>
+            <p class="muted" id="tr-hold" style="font-size:12px;text-align:center"></p>
+            <p class="fine" style="text-align:center;margin-top:4px">Demo trading. Nothing is sent on-chain.</p>
+          </form>
+          <div class="panel" style="margin-top:12px"><div class="kv"><span>Contract</span><span><button class="copy" data-copy="${t.address}">${short(t.address)} ${icon('copy', 'ic" style="width:12px;height:12px')}</button></span>
+            <span>Paired with</span><span>${esc(t.pair)}</span><span>Creator fee</span><span>${(t.fee || 1).toFixed(2)}%</span><span>Age</span><span>${esc(t.age)}</span>
+            ${t.creator ? `<span>Creator</span><span class="mono">${short(t.creator)}</span>` : ''}</div></div>
+        </aside>
+      </div></div>`,
+    mount(root, ctx) {
+      /* ---- chart ---- */
+      const svg = root.querySelector('#ch-svg'), box = root.querySelector('#chart'), cross = root.querySelector('#ch-cross'), dot = root.querySelector('#ch-dot');
+      const val = root.querySelector('#ch-val'), when = root.querySelector('#ch-when');
+      let n = 96, pts = [];
+      const draw = () => {
+        const h = Market.history(t); const data = n ? h.slice(-n) : h;
+        const lo = Math.min(...data.map(d => d.v)), hi = Math.max(...data.map(d => d.v)), pad = (hi - lo) * 0.12 || hi * 0.05;
+        const y = (v) => 205 - (v - lo + pad) / (hi - lo + pad * 2) * 190;
+        pts = data.map((d, i) => ({ x: data.length > 1 ? i / (data.length - 1) * 600 : 300, y: y(d.v), d }));
+        const up = data[data.length - 1].v >= data[0].v;
+        const line = pts.map((p, i) => (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1)).join(' ');
+        svg.innerHTML = `<defs><linearGradient id="chg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".28"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>
+          ${[55, 110, 165].map(g => `<line x1="0" x2="600" y1="${g}" y2="${g}" class="ch-grid"/>`).join('')}
+          <path d="${line} L600 220 L0 220Z" fill="url(#chg)"/><path d="${line}" class="ch-line"/>`;
+        box.classList.toggle('down', !up);
+        const last = pts[pts.length - 1]; dot.hidden = false; dot.style.left = (last.x / 6) + '%'; dot.style.top = (last.y / 2.2) + '%';
+      };
+      const show = (p) => { val.textContent = '$' + compact(p.d.v);
+        const mins = Math.round((Date.now() - p.d.t) / 60000); when.textContent = mins < 1 ? 'Now' : mins < 60 ? mins + 'm ago' : Math.round(mins / 60) + 'h ago'; };
+      box.addEventListener('pointermove', (e) => {
+        const r = box.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * 600;
+        let best = pts[0]; for (const p of pts) if (Math.abs(p.x - x) < Math.abs(best.x - x)) best = p;
+        cross.hidden = false; cross.style.left = (best.x / 6) + '%'; dot.style.left = (best.x / 6) + '%'; dot.style.top = (best.y / 2.2) + '%'; show(best);
+      });
+      box.addEventListener('pointerleave', () => { cross.hidden = true; draw(); show(pts[pts.length - 1]); });
+      root.querySelector('#ch-range').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return;
+        b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); n = +b.dataset.n; draw(); });
+      draw();
+
+      /* ---- live updates ---- */
+      const trades = root.querySelector('#tk-trades'); let first = true;
+      ctx.on(Market.on((ev) => {
+        if (ev.t !== t) return;
+        if (cross.hidden) { draw(); show(pts[pts.length - 1]); }
+        root.querySelector('#tk-holders').textContent = compact(t.holders);
+        root.querySelector('#tk-paid').textContent = usd(t.paid, 0);
+        if (t.stage !== 'bonded') root.querySelector('#tk-curve').textContent = t.curve + '%';
+        if (first) { trades.innerHTML = ''; first = false; }
+        trades.insertAdjacentHTML('afterbegin', tradeRow(ev)); while (trades.children.length > 8) trades.lastElementChild.remove();
+        quote();
+      }));
+
+      /* ---- trade box ---- */
+      const form = root.querySelector('#trade'), amt = root.querySelector('#tr-amt'), go = root.querySelector('#tr-go');
+      const qEl = root.querySelector('#tr-quote'), hold = root.querySelector('#tr-hold'), quick = root.querySelector('#tr-quick');
+      let side = 'buy';
+      const held = () => Holdings.get(t.ticker);
+      const paintQuick = () => {
+        quick.innerHTML = side === 'buy' ? [25, 100, 500].map(v => `<button type="button" data-v="${v}">$${v}</button>`).join('')
+          : [25, 50, 100].map(v => `<button type="button" data-p="${v}">${v}%</button>`).join('');
+        root.querySelector('#tr-lbl').textContent = side === 'buy' ? 'You pay' : 'You sell';
+        root.querySelector('#tr-unit').textContent = side === 'buy' ? 'USD' : t.ticker;
+      };
+      const quote = () => {
+        const a = parseFloat(amt.value);
+        const qt = Market.quote(t, side, a);
+        const h = held();
+        hold.textContent = Wallet.state.address ? `You hold ${compact(h)} ${t.ticker}${h ? ' ≈ ' + usd(h * Market.price(t)) : ''}` : '';
+        if (!qt) { qEl.innerHTML = `<span>Price</span><span class="num">$${Market.price(t).toPrecision(3)}</span>`; }
+        else qEl.innerHTML = `<span>You receive</span><span class="num"><b>${side === 'buy' ? compact(qt.get) + ' ' + esc(t.ticker) : usd(qt.get)}</b></span>
+          <span>Price impact</span><span class="num ${qt.impact > 0.05 ? 'warn' : ''}">${(qt.impact * 100).toFixed(2)}%</span>
+          <span>Fee to ${esc(s ? s.name : t.site)}</span><span class="num accent">${usd(qt.fee)}</span>`;
+        const over = side === 'sell' && a > h;
+        if (!Wallet.state.address) { go.textContent = 'Connect wallet'; go.disabled = false; }
+        else if (!qt) { go.textContent = 'Enter an amount'; go.disabled = true; }
+        else if (over) { go.textContent = `Not enough ${t.ticker}`; go.disabled = true; }
+        else { go.textContent = (side === 'buy' ? 'Buy ' : 'Sell ') + t.ticker; go.disabled = false; }
+      };
+      root.querySelector('#tr-side').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return;
+        b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+        side = b.dataset.v; form.classList.toggle('selling', side === 'sell'); amt.value = ''; paintQuick(); quote(); });
+      quick.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return;
+        amt.value = b.dataset.v ? b.dataset.v : String(Math.floor(held() * (+b.dataset.p) / 100)); quote(); });
+      amt.addEventListener('input', quote);
+      ctx.on(Wallet.on(quote));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!Wallet.state.address) return App.openWallet();
+        const a = parseFloat(amt.value), qt = Market.quote(t, side, a); if (!qt) return;
+        go.disabled = true; go.textContent = side === 'buy' ? 'Buying…' : 'Selling…';
+        ctx.after(700, () => {
+          const usdVal = side === 'buy' ? a : qt.get;
+          Holdings.add(t.ticker, side === 'buy' ? qt.get : -a);
+          Market.apply(t, side, usdVal, Wallet.state.address);
+          App.toast(side === 'buy' ? `Bought ${compact(qt.get)} ${t.ticker}` : `Sold ${compact(a)} ${t.ticker} for ${usd(qt.get)}`);
+          if (side === 'buy' && Holdings.get(t.ticker) === qt.get) FX.confetti(innerWidth * 0.75, innerHeight * 0.4);
+          amt.value = ''; quote();
+        });
+      });
+      paintQuick(); quote();
+    }
   };
 };
 
