@@ -72,6 +72,12 @@
   </aside>
 
   <div class="main-col">
+    <div class="live-bar" role="region" aria-label="Token launch">
+      <span class="live-dot">Live</span>
+      <b>$SPOUT is live</b>
+      <span class="ca">CA <code class="ca-full">0xadfb3d2f405b61dd506bfcef17ac6d8b51e8b85b</code><code class="ca-short">0xadfb…b85b</code></span>
+      <button type="button" class="ca-copy" data-copy="0xadfb3d2f405b61dd506bfcef17ac6d8b51e8b85b">Copy CA</button>
+    </div>
     <header class="topbar">
       <button type="button" class="icon-btn mobile-only" id="menu-btn" aria-label="Open menu"><svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <div class="search" id="search">
@@ -83,7 +89,7 @@
       <div class="preview-wrap">
         <button type="button" class="preview-pill" id="preview-btn" aria-expanded="false" aria-controls="preview-pop"><i></i>Preview</button>
         <div class="popover" id="preview-pop" role="dialog" aria-label="About the preview" hidden>
-          <b>Spout is in preview</b>
+          <b>$SPOUT is live. The app is in preview.</b>
           <p>Markets, trades and payouts are simulated so you can try every flow. Connecting a wallet and signing messages are real, and nothing is ever sent on-chain.</p>
           <a class="link" href="#/docs/disclosures">Read the disclosures →</a>
         </div>
@@ -106,6 +112,7 @@
       <div class="foot-brand">
         <b>Spout</b>
         <small>© <span id="year"></span> Spout</small>
+        <small class="muted">$SPOUT CA: <button type="button" class="link mono" data-copy="0xadfb3d2f405b61dd506bfcef17ac6d8b51e8b85b" style="font-size:11px;word-break:break-all">0xadfb3d2f405b61dd506bfcef17ac6d8b51e8b85b</button></small>
         <a class="x-foot" href="https://x.com/UseSpout" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span>@UseSpout</span></a>
       </div>
       <div><h4>Product</h4><a href="#/explore">Explore</a><a href="#/merchants">Merchants</a><a href="#/payments">Payments</a><a href="#/analytics">Analytics</a><a href="#/launch">Launch</a></div>
