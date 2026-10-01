@@ -31,6 +31,26 @@ const ICONS = {
   globe:  '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'
 };
 
+/* Original line-art marks, one per fictional brand (24×24, stroked in white). */
+const MARKS = {
+  sun:     '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  box:     '<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9M7.5 5.2l9 4.5"/>',
+  leaf:    '<path d="M5 19C5 10 10 5 20 4c-1 10-6 15-15 15z"/><path d="m5 19 8-8"/>',
+  anchor:  '<circle cx="12" cy="5" r="2"/><path d="M12 7v14M8 10h8M4 13a8 8 0 0 0 16 0"/>',
+  moon:    '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  check:   '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>',
+  orbit:   '<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-25 12 12)"/>',
+  wheat:   '<path d="M12 21V8M12 8c-2-1-3-3-3-5 2 0 3 1.5 3 3 0-1.5 1-3 3-3 0 2-1 4-3 5zM12 13c-2.5 0-4-1.5-4.5-3.5 2 0 3.5.8 4.5 2 1-1.2 2.5-2 4.5-2-.5 2-2 3.5-4.5 3.5zM12 18c-2.5 0-4-1.5-4.5-3.5 2 0 3.5.8 4.5 2 1-1.2 2.5-2 4.5-2-.5 2-2 3.5-4.5 3.5z"/>',
+  flame:   '<path d="M12 22c4 0 7-2.7 7-7 0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-2 2-5 5-5 8 0 4.3 3 7 7 7z"/>',
+  wave:    '<path d="M2 12h3l2-6 4 12 3-9 2 5 2-2h4"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+  sprout:  '<path d="M12 21v-9M12 12C12 8 9 6 5 6c0 4 3 6 7 6zM12 10c0-3 2.5-5 6-5 0 3.5-2.5 5-6 5z"/>',
+  book:    '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7"/>',
+  mail:    '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  bag:     '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
+  star:    '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>'
+};
+
 const STATS = [
   { prefix: '$', value: 4.2, decimals: 1, unit: 'M', label: 'Fees routed to websites', note: 'Sample figure for this demo', delta: '+18% 30d' },
   { value: 1284, unit: '', label: 'Websites receiving fees', note: 'Across every listed token' },
@@ -40,18 +60,18 @@ const STATS = [
 
 /* Fictional websites. hue drives the generated art and avatar color. */
 const SITES = [
-  { name: 'Lumen Notes',    owner: 'lumennotes.app',   domain: 'lumennotes.app',   hue: 262, claimed: true,  received: 18420.55, tokens: 3 },
-  { name: 'Parcel Post',    owner: 'parcelpost.io',    domain: 'parcelpost.io',    hue: 18,  claimed: true,  received: 9310.20,  tokens: 2 },
-  { name: 'Fieldkit',       owner: 'fieldkit.dev',     domain: 'fieldkit.dev',     hue: 150, claimed: true,  received: 7442.90,  tokens: 2 },
-  { name: 'Harbor Radio',   owner: 'harbor.fm',        domain: 'harbor.fm',        hue: 205, claimed: false, received: 0,        tokens: 1, owed: 1260.40 },
-  { name: 'Quietbox',       owner: 'quietbox.co',      domain: 'quietbox.co',      hue: 330, claimed: true,  received: 5120.00,  tokens: 1 },
-  { name: 'Tinyforms',      owner: 'tinyforms.so',     domain: 'tinyforms.so',     hue: 45,  claimed: false, received: 0,        tokens: 1, owed: 842.10 },
-  { name: 'Orbit Maps',     owner: 'orbitmaps.net',    domain: 'orbitmaps.net',    hue: 185, claimed: true,  received: 3980.75,  tokens: 1 },
-  { name: 'Grainline',      owner: 'grainline.shop',   domain: 'grainline.shop',   hue: 30,  claimed: false, received: 0,        tokens: 1, owed: 512.00 },
-  { name: 'Kilnworks',      owner: 'kilnworks.studio', domain: 'kilnworks.studio', hue: 8,   claimed: true,  received: 2210.30,  tokens: 1 },
-  { name: 'Patchbay',       owner: 'patchbay.audio',   domain: 'patchbay.audio',   hue: 280, claimed: false, received: 0,        tokens: 1, owed: 301.65 },
-  { name: 'Northwind Reads',owner: 'northwind.pub',    domain: 'northwind.pub',    hue: 220, claimed: true,  received: 1640.00,  tokens: 1 },
-  { name: 'Sprout Kit',     owner: 'sproutkit.garden', domain: 'sproutkit.garden', hue: 110, claimed: false, received: 0,        tokens: 1, owed: 220.00 }
+  { name: 'Lumen Notes',    owner: 'lumennotes.app',   domain: 'lumennotes.app',   hue: 262, logo: 'sun', claimed: true,  received: 18420.55, tokens: 3 },
+  { name: 'Parcel Post',    owner: 'parcelpost.io',    domain: 'parcelpost.io',    hue: 18, logo: 'box',  claimed: true,  received: 9310.20,  tokens: 2 },
+  { name: 'Fieldkit',       owner: 'fieldkit.dev',     domain: 'fieldkit.dev',     hue: 150, logo: 'leaf', claimed: true,  received: 7442.90,  tokens: 2 },
+  { name: 'Harbor Radio',   owner: 'harbor.fm',        domain: 'harbor.fm',        hue: 205, logo: 'anchor', claimed: false, received: 0,        tokens: 1, owed: 1260.40 },
+  { name: 'Quietbox',       owner: 'quietbox.co',      domain: 'quietbox.co',      hue: 330, logo: 'moon', claimed: true,  received: 5120.00,  tokens: 1 },
+  { name: 'Tinyforms',      owner: 'tinyforms.so',     domain: 'tinyforms.so',     hue: 45, logo: 'check',  claimed: false, received: 0,        tokens: 1, owed: 842.10 },
+  { name: 'Orbit Maps',     owner: 'orbitmaps.net',    domain: 'orbitmaps.net',    hue: 185, logo: 'orbit', claimed: true,  received: 3980.75,  tokens: 1 },
+  { name: 'Grainline',      owner: 'grainline.shop',   domain: 'grainline.shop',   hue: 30, logo: 'wheat',  claimed: false, received: 0,        tokens: 1, owed: 512.00 },
+  { name: 'Kilnworks',      owner: 'kilnworks.studio', domain: 'kilnworks.studio', hue: 8, logo: 'flame',   claimed: true,  received: 2210.30,  tokens: 1 },
+  { name: 'Patchbay',       owner: 'patchbay.audio',   domain: 'patchbay.audio',   hue: 280, logo: 'wave', claimed: false, received: 0,        tokens: 1, owed: 301.65 },
+  { name: 'Northwind Reads',owner: 'northwind.pub',    domain: 'northwind.pub',    hue: 220, logo: 'compass', claimed: true,  received: 1640.00,  tokens: 1 },
+  { name: 'Sprout Kit',     owner: 'sproutkit.garden', domain: 'sproutkit.garden', hue: 110, logo: 'sprout', claimed: false, received: 0,        tokens: 1, owed: 220.00 }
 ];
 
 /* Deterministic pseudo-addresses so links stay stable between visits. */
@@ -63,6 +83,8 @@ function fakeAddr(seed) {
   }
   return out;
 }
+
+const TOKEN_LOGO = {'LUMEN': 'sun', 'PARCEL': 'box', 'FIELD': 'leaf', 'HARBOR': 'anchor', 'QUIET': 'moon', 'FORMS': 'check', 'ORBIT': 'orbit', 'GRAIN': 'wheat', 'KILN': 'flame', 'PATCH': 'wave', 'NORTH': 'compass', 'SPROUT': 'sprout', 'NOTES': 'book', 'POST': 'mail', 'KIT': 'bag', 'LUX': 'star'};
 
 const TOKENS = [
   ['LUMEN',  'Lumen',        'lumennotes.app',   'graduating', 48210, 6.4,  71, 'USDC', '12m'],
@@ -84,7 +106,7 @@ const TOKENS = [
 ].map(([ticker, name, site, stage, mcap, change, curve, pair, age]) => {
   const s = SITES.find(x => x.domain === site);
   const paid = s && s.claimed ? Math.round(mcap * 0.012 * 100) / 100 : 0;
-  return { ticker, name, site, stage, mcap, change, curve, pair, age, hue: s ? s.hue : 260,
+  return { ticker, name, site, stage, logo: TOKEN_LOGO[ticker], mcap, change, curve, pair, age, hue: s ? s.hue : 260,
     holders: Math.round(Math.sqrt(mcap) * 3.1), paid, address: fakeAddr(ticker + site) };
 });
 

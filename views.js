@@ -38,7 +38,8 @@ function art(hue, seed = '') {
     <linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>${pat}</defs>
     <rect width="200" height="120" fill="url(#g${id})"/><rect width="200" height="120" fill="url(#${id})"/></svg>`;
 }
-const avatar = (name, hue, cls = 'av') => `<span class="${cls}" style="background:${color(hue)}">${esc(name[0])}</span>`;
+const mark = (key, cls = 'mark') => MARKS[key] ? `<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true">${MARKS[key]}</svg>` : '';
+const avatar = (name, hue, cls = 'av', logo) => `<span class="${cls}" style="background:${color(hue)}">${logo && MARKS[logo] ? mark(logo) : esc(name[0])}</span>`;
 
 function tokenCard(t, i = 0) {
   const s = findSite(t.site);
@@ -46,8 +47,8 @@ function tokenCard(t, i = 0) {
   return `<a class="tok" href="#/token/${t.address}" style="animation-delay:${i * 40}ms">
     <div class="tok-art">${t.image ? `<img src="${esc(t.image)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : art(t.hue, t.ticker)}
       <span class="badge tl"><i></i>${esc(t.pair)}</span><span class="badge tr">${esc(t.age)}</span>
-      ${t.image ? '' : `<span class="letter">${esc(t.ticker[0])}</span>`}
-      <span class="badge bl">${icon('globe', 'ic" style="width:10px;height:10px')}${esc(s ? s.name : t.site)}</span></div>
+      ${t.image ? '' : t.logo && MARKS[t.logo] ? mark(t.logo, 'tok-mark') : `<span class="letter">${esc(t.ticker[0])}</span>`}
+      <span class="badge bl">${s && s.logo ? `<span class="badge-av" style="background:${color(s.hue)}">${mark(s.logo)}</span>` : icon('globe', 'ic" style="width:10px;height:10px')}${esc(s ? s.name : t.site)}</span></div>
     <div class="tok-body">
       <div class="tok-name">${esc(t.name)} <small>${esc(t.ticker)}</small></div>
       <div class="tok-cap num">$${compact(t.mcap)} <small>MC</small><span class="chg ${t.change < 0 ? 'neg' : ''}">${t.change > 0 ? '+' : ''}${t.change.toFixed(1)}%</span></div>
@@ -61,7 +62,7 @@ function tokenCard(t, i = 0) {
 function merchantCard(s) {
   const owed = s.owed || 0;
   return `<a class="mcard" href="#/site/${s.domain}"><div class="art" style="position:relative">${art(s.hue, s.domain)}</div>
-    <div class="body">${avatar(s.name, s.hue)}<b>${esc(s.name)}</b><div class="dom">${esc(s.domain)}</div>
+    <div class="body">${avatar(s.name, s.hue, 'av', s.logo)}<b>${esc(s.name)}</b><div class="dom">${esc(s.domain)}</div>
     <span class="st ${s.claimed ? 'ok' : ''}">${s.claimed ? '● Claimed' : '○ Not claimed'}</span>
     <div class="nums"><span><b>${s.tokens}</b> Tokens</span><span><b class="num">${s.claimed ? usd(s.received, 0) : usd(owed, 0)}</b> ${s.claimed ? 'Received' : 'Owed'}</span></div></div></a>`;
 }
@@ -72,7 +73,7 @@ function parseAge(a) { const n = parseFloat(a); return a.endsWith('d') ? n * 144
 function paymentRows(list) {
   return list.map(p => {
     const s = findSite(p.site);
-    return `<tr class="rowlink" data-href="#/site/${p.site}"><td><div class="cell-tok">${avatar(s.name, s.hue, 'mini')}<div>${esc(s.name)}<div class="muted" style="font-size:12px">${esc(p.site)}</div></div></div></td>
+    return `<tr class="rowlink" data-href="#/site/${p.site}"><td><div class="cell-tok">${avatar(s.name, s.hue, 'mini', s.logo)}<div>${esc(s.name)}<div class="muted" style="font-size:12px">${esc(p.site)}</div></div></div></td>
       <td class="mono" style="font-size:12px">${esc(p.token)}</td><td class="num">${usd(p.amount)}</td><td>${esc(p.rail)}</td>
       <td class="muted">${ago(p.at)}</td><td><button class="copy" data-copy="${p.tx}">${short(p.tx)} ${icon('copy', 'ic" style="width:12px;height:12px')}</button></td></tr>`;
   }).join('');
@@ -89,7 +90,7 @@ VIEWS.home = () => {
   const mostPaid = SITES.filter(s => s.claimed).sort((a, b) => b.received - a.received).slice(0, 5);
   const cols = [0, 1, 2].map(c => SITES.filter((_, i) => i % 3 === c));
   const wallCol = (list) => { const tiles = list.map(s => `<div class="mtile"><div class="art" style="position:relative;height:52px">${art(s.hue, s.domain)}</div>
-    <div class="who">${avatar(s.name, s.hue)}<b>${esc(s.name)}</b><small>${esc(s.domain)}</small></div></div>`).join(''); return tiles + tiles; };
+    <div class="who">${avatar(s.name, s.hue, 'av', s.logo)}<b>${esc(s.name)}</b><small>${esc(s.domain)}</small></div></div>`).join(''); return tiles + tiles; };
   const pts = DAILY.map((v, i) => [i / (DAILY.length - 1) * 300, 100 - (v - 500) / 3200 * 90]);
   const line = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
   let w = 0; const W = (txt) => txt.split(' ').map(x => `<span class="w" style="animation-delay:${(w++) * 70 + 100}ms">${x}</span>`).join(' ');
@@ -98,7 +99,7 @@ VIEWS.home = () => {
     title: 'Conduit — Point token fees at any website',
     html: `<div class="page">
       <section class="hero">
-        <span class="pill"><span class="pill-swap" id="hero-pill">${avatar(SITES[0].name, SITES[0].hue, 'pill-av')}<b style="font-weight:500">${esc(SITES[0].name)}</b><span class="logo-mark logo-inline" style="--s:14px"></span><span class="muted">earns from fees</span></span></span>
+        <span class="pill"><span class="pill-swap" id="hero-pill">${avatar(SITES[0].name, SITES[0].hue, 'pill-av', SITES[0].logo)}<b style="font-weight:500">${esc(SITES[0].name)}</b><span class="logo-mark logo-inline" style="--s:14px"></span><span class="muted">earns from fees</span></span></span>
         <h1 class="display">${W('Point token fees')} <br>${W('at any')} <span class="w" style="animation-delay:${(w++) * 70 + 100}ms"><span class="logo-mark logo-inline"></span></span> <span class="w rot" style="animation-delay:${(w++) * 70 + 100}ms" id="rot">${words.map((x, i) => `<span class="${i ? 'down' : ''}">${x}</span>`).join('')}</span></h1>
         <p class="hero-sub">Every trade on a Conduit token pays a small creator fee. Instead of a wallet, that fee is pointed at a real website, converted to dollars and paid out to its bank, card account or USDC wallet.
           Built for <a class="chip" href="#/docs/how"><i></i>EVM chains</a> with <a class="chip" href="#/flow"><i style="background:rgb(var(--accent))"></i>open payouts</a></p>
@@ -116,7 +117,7 @@ VIEWS.home = () => {
 
       <section class="bento rv">
         <a class="tile w3" href="#/merchants"><div class="wall">${cols.map(c => `<div class="wall-col">${wallCol(c)}</div>`).join('')}</div><div class="tile-foot"><span>Merchants</span><span>Open →</span></div></a>
-        <a class="tile w3" href="#/payments"><div class="tile-center"><div class="flowdots"><span class="logo-mark"></span><span class="track"></span>${avatar('L', 262, 'pill-av')}</div>
+        <a class="tile w3" href="#/payments"><div class="tile-center"><div class="flowdots"><span class="logo-mark"></span><span class="track"></span>${avatar(SITES[0].name, SITES[0].hue, 'pill-av', SITES[0].logo)}</div>
           <b style="font-weight:500">${PAYMENTS.length} payouts settled</b><p class="muted" style="font-size:12px;margin-top:6px;max-width:260px">Latest: ${usd(PAYMENTS[0].amount)} to ${esc(PAYMENTS[0].site)}, ${ago(PAYMENTS[0].at)}</p></div><div class="tile-foot"><span>Payments</span><span>Open →</span></div></a>
         <a class="tile w2" href="#/analytics"><div class="tile-pad"><div class="k"><span>Fees routed</span><span>30D</span></div><div class="v num">${usd(DAILY.reduce((a, b) => a + b, 0), 0)}</div></div>
           <svg class="spark" viewBox="0 0 300 100" preserveAspectRatio="none"><defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--accent))" stop-opacity=".3"/><stop offset="1" stop-color="rgb(var(--accent))" stop-opacity="0"/></linearGradient></defs>
@@ -143,7 +144,7 @@ VIEWS.home = () => {
         <div><div class="bar"><h3 class="display">Recent payments</h3><a class="link" href="#/payments" style="margin-left:auto">View all →</a></div>
           <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Website</th><th>Token</th><th>Amount</th><th>To</th><th>When</th><th>Tx</th></tr></thead><tbody>${paymentRows(PAYMENTS.slice(0, 5))}</tbody></table></div></div>
         <aside><div class="bar"><h3 class="display">Most paid</h3></div>
-          <div class="panel" style="padding:8px">${mostPaid.map((s, i) => `<a href="#/site/${s.domain}" class="sr-item"><span class="muted mono" style="font-size:11px;width:14px">${i + 1}</span>${avatar(s.name, s.hue, 'mini')}<span>${esc(s.name)}</span><small class="num">${usd(s.received, 0)}</small></a>`).join('')}</div></aside>
+          <div class="panel" style="padding:8px">${mostPaid.map((s, i) => `<a href="#/site/${s.domain}" class="sr-item"><span class="muted mono" style="font-size:11px;width:14px">${i + 1}</span>${avatar(s.name, s.hue, 'mini', s.logo)}<span>${esc(s.name)}</span><small class="num">${usd(s.received, 0)}</small></a>`).join('')}</div></aside>
       </section>
     </div>`,
     mount(root, ctx) {
@@ -154,12 +155,12 @@ VIEWS.home = () => {
       /* hero pill cycles through claimed sites */
       const pill = root.querySelector('#hero-pill'); const claimed = SITES.filter(s => s.claimed); let pi = 0;
       ctx.every(3200, () => { pill.classList.add('out'); ctx.after(300, () => { pi = (pi + 1) % claimed.length; const s = claimed[pi];
-        pill.innerHTML = `${avatar(s.name, s.hue, 'pill-av')}<b style="font-weight:500">${esc(s.name)}</b><span class="logo-mark logo-inline" style="--s:14px"></span><span class="muted">earns from fees</span>`; pill.classList.remove('out'); }); });
+        pill.innerHTML = `${avatar(s.name, s.hue, 'pill-av', s.logo)}<b style="font-weight:500">${esc(s.name)}</b><span class="logo-mark logo-inline" style="--s:14px"></span><span class="muted">earns from fees</span>`; pill.classList.remove('out'); }); });
       /* typing demo */
       const tt = root.querySelector('#typer-text'), hit = root.querySelector('#typer-hit'); let si = 0;
       const typeOne = () => { const s = SITES[si++ % SITES.length]; let i = 0; hit.classList.add('hidden'); tt.textContent = '';
         const step = () => { if (i <= s.domain.length) { tt.textContent = s.domain.slice(0, i++); ctx.after(70, step); }
-          else { hit.innerHTML = `${avatar(s.name, s.hue, 'mini')}<div><b style="font-weight:600">${esc(s.name)}</b><div class="muted">${esc(s.domain)}</div></div>`; hit.classList.remove('hidden'); ctx.after(2200, typeOne); } };
+          else { hit.innerHTML = `${avatar(s.name, s.hue, 'mini', s.logo)}<div><b style="font-weight:600">${esc(s.name)}</b><div class="muted">${esc(s.domain)}</div></div>`; hit.classList.remove('hidden'); ctx.after(2200, typeOne); } };
         step(); };
       typeOne();
       /* token tabs */
@@ -206,7 +207,7 @@ VIEWS.merchants = () => ({
     const paint = () => {
       const list = SITES.filter(s => filter === 'all' || (filter === 'claimed') === s.claimed)
         .sort((a, b) => { const va = key === 'name' ? a.name : (a[key] || 0), vb = key === 'name' ? b.name : (b[key] || 0); return (va > vb ? 1 : va < vb ? -1 : 0) * dir; });
-      body.innerHTML = list.map(s => `<tr class="rowlink" data-href="#/site/${s.domain}"><td><div class="cell-tok">${avatar(s.name, s.hue, 'mini')}<div>${esc(s.name)}<div class="muted" style="font-size:12px">${esc(s.domain)}</div></div></div></td>
+      body.innerHTML = list.map(s => `<tr class="rowlink" data-href="#/site/${s.domain}"><td><div class="cell-tok">${avatar(s.name, s.hue, 'mini', s.logo)}<div>${esc(s.name)}<div class="muted" style="font-size:12px">${esc(s.domain)}</div></div></div></td>
         <td class="num">${s.tokens}</td><td class="num">${usd(s.received)}</td><td class="num">${usd(s.owed || 0)}</td><td><span class="claim ${s.claimed ? 'ok' : ''}" style="margin:0">${s.claimed ? 'Claimed' : 'Not claimed'}</span></td></tr>`).join('');
     };
     root.querySelector('#m-filter').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
@@ -467,7 +468,7 @@ VIEWS.site = (q, domain) => {
     title: `${site.name} — Conduit`,
     html: `<div class="page"><a class="link" href="#/merchants">← Merchants</a>
       <div class="mcard" style="margin-top:16px;cursor:default;transform:none"><div class="art" style="position:relative;height:130px">${art(site.hue, site.domain)}</div>
-        <div class="body" style="padding:34px 20px 20px">${avatar(site.name, site.hue)}<h1 class="display" style="font-size:30px">${esc(site.name)}</h1><div class="dom">${esc(site.domain)}</div>
+        <div class="body" style="padding:34px 20px 20px">${avatar(site.name, site.hue, 'av', site.logo)}<h1 class="display" style="font-size:30px">${esc(site.name)}</h1><div class="dom">${esc(site.domain)}</div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px"><span class="st ${site.claimed ? 'ok' : ''}" style="margin:0">${site.claimed ? '● Claimed' : '○ Not claimed'}</span>
           <span class="muted" style="font-size:13px">${site.claimed ? usd(site.received) + ' received' : usd(site.owed || 0) + ' owed'}</span>
           ${site.claimed ? '' : '<button class="btn btn-accent sm" id="claim-btn" style="margin-left:auto">Claim this site</button>'}</div>

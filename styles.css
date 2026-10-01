@@ -304,6 +304,12 @@ svg.bgpat { position: absolute; inset: 0; width: 100%; height: 100%; }
 .art { position: relative; overflow: hidden; }
 .tok-art .letter { position: relative; font: 600 54px "Inter Tight", sans-serif; color: #fff; text-shadow: 0 4px 24px rgb(0 0 0 / .35); transition: transform .4s var(--ease); }
 .tok:hover .letter { transform: scale(1.08) rotate(-3deg); }
+.tok-mark { position: relative; width: 58px; height: 58px; fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+  filter: drop-shadow(0 4px 14px rgb(0 0 0 / .4)); transition: transform .4s var(--ease); }
+.tok:hover .tok-mark { transform: scale(1.1) rotate(-4deg); }
+.mark { width: 58%; height: 58%; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.badge-av { width: 14px; height: 14px; border-radius: 99px; display: inline-flex; align-items: center; justify-content: center; }
+.badge-av .mark { width: 9px; height: 9px; stroke-width: 2.6; }
 .badge { position: absolute; font: 600 9.5px Inter, sans-serif; color: #fff; background: rgb(0 0 0 / .45); backdrop-filter: blur(6px); border-radius: 99px; padding: 3px 7px; display: inline-flex; align-items: center; gap: 4px; }
 .badge.tl { top: 7px; left: 7px; } .badge.tr { top: 7px; right: 7px; }
 .badge.bl { bottom: 7px; left: 7px; background: rgb(255 255 255 / .92); color: #111; }
