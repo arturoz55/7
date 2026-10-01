@@ -278,13 +278,22 @@ const App = (() => {
       const t = ev.t;
       document.querySelectorAll(`[data-tok="${CSS.escape(t.ticker)}"]`).forEach(el => {
         const cap = el.querySelector('.cap-v'), chg = el.querySelector('.chg');
-        if (cap) cap.textContent = '$' + compact(t.mcap);
+        if (cap) cap.textContent = el.classList.contains('tk-price') ? fmtPrice(Market.price(t)) : '$' + compact(t.mcap);
         if (chg) { chg.textContent = fmtChg(t.change); chg.classList.toggle('neg', t.change < 0); }
         const m = el.querySelector('.meter i'); if (m && t.stage !== 'bonded') { m.style.width = t.curve + '%'; const c = el.querySelector('.curve span:last-child'); if (c) c.textContent = t.curve + '%'; }
         el.classList.remove('flash-up', 'flash-down'); void el.offsetWidth; el.classList.add(ev.up ? 'flash-up' : 'flash-down');
       });
     });
     Market.start();
+    /* ages and "x ago" labels keep counting */
+    setInterval(() => {
+      document.querySelectorAll('[data-age]').forEach(el => { el.textContent = ageOf(+el.dataset.age); });
+      document.querySelectorAll('[data-ago]').forEach(el => { el.textContent = ago(+el.dataset.ago); });
+    }, 10000);
+    /* preview pill */
+    const pv = document.getElementById('preview-btn'), pop = document.getElementById('preview-pop');
+    pv.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; pv.setAttribute('aria-expanded', String(!pop.hidden)); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.preview-wrap')) { pop.hidden = true; pv.setAttribute('aria-expanded', 'false'); } });
     FX.initTilt();
     /* watchlist stars (inside links, so stop navigation) */
     document.addEventListener('click', (e) => {

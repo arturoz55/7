@@ -23,7 +23,7 @@ npx http-server -p 8080 .
 - **Theme**: `D` toggles light/dark, and the site follows the OS theme until you choose.
 - **Consent gate**: the "Remember my settings" choice persists theme, sidebar and wallet. "Just this visit" stores nothing long-term.
 
-All tokens, websites and payments are fictional sample data (`data.js`).
+Conduit runs as a **preview**: the market, trades and payouts are simulated (`data.js`, `interactions.js`), and the Preview pill in the header says so. Wallet connection and signatures are real, and nothing is sent on-chain.
 
 ## Adding token logos
 

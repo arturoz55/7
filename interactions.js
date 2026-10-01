@@ -1,6 +1,7 @@
-/* Conduit — interactions: simulated live market, watchlist, demo trading,
-   card tilt, confetti and the hero spotlight. Everything here is a demo:
-   prices move on a local random walk and trades never leave the browser. */
+/* Conduit — interactions: the preview market, watchlist, preview trading,
+   card tilt, confetti and the hero spotlight. The market is simulated in the
+   browser: a recurring pool of traders, log-normal trade sizes, momentum and
+   the occasional whale. Trades never leave the browser. */
 
 'use strict';
 
@@ -26,7 +27,8 @@ const Market = (() => {
     let v = t.mcap;
     const now = Date.now();
     for (let i = n - 1; i >= 0; i--) {
-      out[i] = { t: now - (n - 1 - i) * STEP, v };
+      const vol = Math.exp(Math.log(t.mcap * 0.0025) + (rnd() - 0.5) * 2.2);
+      out[i] = { t: now - (n - 1 - i) * STEP, v, vol };
       v = Math.max(t.mcap * 0.2, v / (1 + (rnd() - 0.47) * 0.06));
     }
     hist.set(t.ticker, out);
@@ -34,6 +36,41 @@ const Market = (() => {
   }
 
   const price = (t) => t.mcap / SUPPLY;
+  const gauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+
+  /* 24h figures: a seeded base for the day so far, plus every live trade since load. */
+  const day = new Map();
+  function stats(t) {
+    if (!day.has(t.ticker)) {
+      const h = history(t);
+      const vol = h.reduce((a, p) => a + p.vol, 0);
+      const txns = Math.round(vol / (55 + seeded(t.ticker)() * 60));
+      const buys = Math.round(txns * (0.5 + t.change / 200));
+      day.set(t.ticker, { vol, txns, buys, sells: txns - buys });
+    }
+    const d = day.get(t.ticker);
+    return { ...d, liquidity: Math.max(2000, t.mcap * 0.35) };
+  }
+
+  /* Who holds the supply: the curve or pool, the creator, then the largest wallets. */
+  function holders(t) {
+    const rnd = seeded('h' + t.ticker);
+    const rows = [];
+    const poolShare = t.stage === 'bonded' ? 18 + rnd() * 10 : Math.max(8, 100 - t.curve * 0.9);
+    rows.push({ label: t.stage === 'bonded' ? 'Liquidity pool' : 'Bonding curve', pct: poolShare, tag: 'pool' });
+    rows.push({ label: t.creator ? short(t.creator) : TRADERS[Math.floor(rnd() * TRADERS.length)].slice(0, 6) + '…' + TRADERS[0].slice(-4), pct: 1.5 + rnd() * 3, tag: 'creator' });
+    let left = 100 - poolShare - rows[1].pct, share = left * 0.16;
+    for (let i = 0; i < 6; i++) { const a = TRADERS[Math.floor(rnd() * TRADERS.length)]; rows.push({ label: short(a), pct: share }); share *= 0.62 + rnd() * 0.2; }
+    return rows;
+  }
+
+  /* A recurring cast of traders so the same wallets show up again, like a real market. */
+  const TRADERS = Array.from({ length: 48 }, (_, i) => {
+    const r = seeded('trader' + i); let a = '0x';
+    for (let k = 0; k < 40; k++) a += '0123456789abcdef'[Math.floor(r() * 16)];
+    return a;
+  });
+  const bias = new Map();
 
   /* Constant-product style quote against a virtual pool sized from market cap. */
   function quote(t, side, amount) {
@@ -53,6 +90,8 @@ const Market = (() => {
   }
 
   function apply(t, side, usdValue, who) {
+    const st = stats(t), dd = day.get(t.ticker);
+    dd.vol += usdValue; dd.txns += 1; side === 'buy' ? dd.buys++ : dd.sells++;
     const pool = Math.max(2000, t.mcap * 0.35);
     const delta = (side === 'buy' ? 1 : -1) * usdValue / pool * 0.5;
     const before = t.mcap;
@@ -62,31 +101,47 @@ const Market = (() => {
     if (side === 'buy' && Math.random() < 0.15) t.holders += 1;
     const s = typeof findSite === 'function' && findSite(t.site);
     if (s && s.claimed) t.paid = Math.round((t.paid + usdValue * (t.fee || 1) / 100) * 100) / 100;
-    const h = history(t); h.push({ t: Date.now(), v: t.mcap }); if (h.length > 400) h.shift();
-    const ev = { t, side, usd: usdValue, who: who || randomAddr(), at: Date.now(), up: t.mcap >= before };
+    const h = history(t), last = h[h.length - 1], now = Date.now();
+    if (now - last.t < 60e3) { last.v = t.mcap; last.vol += usdValue; } else { h.push({ t: now, v: t.mcap, vol: usdValue }); if (h.length > 400) h.shift(); }
+    const ev = { t, side, usd: usdValue, who: who || trader(), at: now, up: t.mcap >= before, whale: usdValue >= 1000, tokens: usdValue / price(t) };
     subs.forEach(fn => { try { fn(ev); } catch (e) { console.error(e); } });
     return ev;
   }
 
-  function randomAddr() {
+  function trader() {
+    if (Math.random() < 0.82) return TRADERS[Math.floor(Math.random() ** 1.6 * TRADERS.length)];
     let a = '0x'; for (let i = 0; i < 40; i++) a += '0123456789abcdef'[Math.floor(Math.random() * 16)];
     return a;
   }
 
+  /* Bigger tokens trade more often; each token drifts between buying and selling streaks. */
+  function pick() {
+    const w = TOKENS.map(t => Math.sqrt(t.mcap)), sum = w.reduce((a, b) => a + b, 0);
+    let r = Math.random() * sum;
+    for (let i = 0; i < TOKENS.length; i++) { r -= w[i]; if (r <= 0) return TOKENS[i]; }
+    return TOKENS[0];
+  }
   function tick() {
-    const t = TOKENS[Math.floor(Math.random() * TOKENS.length)];
-    const side = Math.random() < 0.56 ? 'buy' : 'sell';
-    const usdValue = Math.round((15 + Math.random() ** 2 * Math.min(2400, t.mcap * 0.02)) * 100) / 100;
+    const t = pick();
+    const b = Math.max(-0.25, Math.min(0.25, (bias.get(t.ticker) || 0) * 0.85 + gauss() * 0.08));
+    bias.set(t.ticker, b);
+    const side = Math.random() < 0.52 + b ? 'buy' : 'sell';
+    let usdValue = Math.exp(Math.log(70) + gauss() * 1.05);
+    if (Math.random() < 0.025) usdValue *= 10 + Math.random() * 15;
+    usdValue = Math.round(Math.min(Math.max(usdValue, 3), t.mcap * 0.04) * 100) / 100;
     apply(t, side, usdValue);
   }
 
   function start() {
     if (timer) return;
-    const loop = () => { if (!document.hidden) tick(); timer = setTimeout(loop, 1800 + Math.random() * 2200); };
-    timer = setTimeout(loop, 1500);
+    const loop = () => {
+      if (!document.hidden) { tick(); if (Math.random() < 0.18) { setTimeout(tick, 250 + Math.random() * 400); setTimeout(tick, 700 + Math.random() * 600); } }
+      timer = setTimeout(loop, Math.exp(Math.log(1900) + gauss() * 0.55));
+    };
+    timer = setTimeout(loop, 1200);
   }
 
-  return { history, quote, apply, price, start, on: (fn) => { subs.add(fn); return () => subs.delete(fn); } };
+  return { history, quote, apply, price, stats, holders, start, on: (fn) => { subs.add(fn); return () => subs.delete(fn); } };
 })();
 
 /* ---------------------------------------------------------------- watchlist */
@@ -105,7 +160,7 @@ const Watch = (() => {
   };
 })();
 
-/* ---------------------------------------------------------------- holdings (demo) */
+/* ---------------------------------------------------------------- holdings (preview, per wallet, this session) */
 const Holdings = {
   key: () => 'conduit:hold:' + (Wallet.state.address || '').toLowerCase(),
   get(ticker) { try { return JSON.parse(sessionStorage.getItem(this.key()) || '{}')[ticker] || 0; } catch (e) { return 0; } },
@@ -174,3 +229,23 @@ const FX = (() => {
 
   return { initTilt, spotlight, confetti };
 })();
+
+/* DEX-style price: 0.0000482 reads as 0.0₄482. */
+function fmtPrice(p) {
+  if (!(p > 0)) return '$0';
+  if (p >= 0.01) return '$' + p.toFixed(4);
+  const zeros = Math.floor(-Math.log10(p)) - 1;
+  const digits = Math.round(p * 10 ** (zeros + 4)).toString().slice(0, 4);
+  if (zeros < 3) return '$0.' + '0'.repeat(zeros) + digits;
+  const sub = String(zeros).split('').map(c => '₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+  return '$0.0' + sub + digits;
+}
+
+/* Relative age that keeps counting: 45s, 12m, 3h, 6d. */
+function ageOf(ts) {
+  const s = Math.max(1, Math.floor((Date.now() - ts) / 1000));
+  if (s < 60) return s + 's';
+  const m = Math.floor(s / 60); if (m < 60) return m + 'm';
+  const h = Math.floor(m / 60); if (h < 48) return h + 'h';
+  return Math.floor(h / 24) + 'd';
+}

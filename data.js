@@ -1,6 +1,7 @@
-/* Conduit — sample data.
-   Everything here is fictional demo data: the tokens, the websites and the
-   ledger. Nothing on the page reads a live market. */
+/* Conduit — market data for the preview.
+   Tokens, websites and payouts are simulated (see interactions.js for the
+   live market). Times are relative to page load so the feed always reads
+   as current. */
 
 'use strict';
 
@@ -51,13 +52,6 @@ const MARKS = {
   star:    '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>'
 };
 
-const STATS = [
-  { prefix: '$', value: 4.2, decimals: 1, unit: 'M', label: 'Fees routed to websites', note: 'Sample figure for this demo', delta: '+18% 30d' },
-  { value: 1284, unit: '', label: 'Websites receiving fees', note: 'Across every listed token' },
-  { value: 92, unit: '%', label: 'Of fees reach the site', note: 'After network and payout costs' },
-  { value: 3, suffix: 'min', label: 'Median time to payout', note: 'From fee sweep to settlement' }
-];
-
 /* Fictional websites. hue drives the generated art and avatar color. */
 const SITES = [
   { name: 'Lumen Notes',    owner: 'lumennotes.app',   domain: 'lumennotes.app',   hue: 262, logo: 'sun', logoImg: 'logos/lumen.svg', claimed: true,  received: 18420.55, tokens: 3 },
@@ -106,6 +100,8 @@ const TOKEN_IMAGES = {
   LUX: 'logos/lux.svg',
 };
 
+function ageMinutes(a) { const n = parseFloat(a); return a.endsWith('d') ? n * 1440 : a.endsWith('h') ? n * 60 : n; }
+
 const TOKEN_LOGO = {'LUMEN': 'sun', 'PARCEL': 'box', 'FIELD': 'leaf', 'HARBOR': 'anchor', 'QUIET': 'moon', 'FORMS': 'check', 'ORBIT': 'orbit', 'GRAIN': 'wheat', 'KILN': 'flame', 'PATCH': 'wave', 'NORTH': 'compass', 'SPROUT': 'sprout', 'NOTES': 'book', 'POST': 'mail', 'KIT': 'bag', 'LUX': 'star'};
 
 const TOKENS = [
@@ -128,13 +124,13 @@ const TOKENS = [
 ].map(([ticker, name, site, stage, mcap, change, curve, pair, age]) => {
   const s = SITES.find(x => x.domain === site);
   const paid = s && s.claimed ? Math.round(mcap * 0.012 * 100) / 100 : 0;
-  return { ticker, name, site, stage, logo: TOKEN_LOGO[ticker], logoImg: TOKEN_IMAGES[ticker], mcap, change, curve, pair, age, hue: s ? s.hue : 260,
+  return { created: Date.now() - ageMinutes(age) * 60e3 - Math.floor(Math.random() * 50e3), ticker, name, site, stage, logo: TOKEN_LOGO[ticker], logoImg: TOKEN_IMAGES[ticker], mcap, change, curve, pair, age, hue: s ? s.hue : 260,
     holders: Math.round(Math.sqrt(mcap) * 3.1), paid, address: fakeAddr(ticker + site) };
 });
 
 /* Completed payouts, newest first. */
 const PAYMENTS = (() => {
-  const out = [], now = Date.UTC(2026, 8, 30, 18, 0);
+  const out = [], now = Date.now() - 6 * 60e3;
   const claimed = SITES.filter(s => s.claimed);
   let seed = 7;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -179,3 +175,17 @@ const CHAINS = {
   1: 'Ethereum', 10: 'Optimism', 56: 'BNB Chain', 137: 'Polygon', 8453: 'Base',
   42161: 'Arbitrum One', 11155111: 'Sepolia', 84532: 'Base Sepolia'
 };
+
+/* Headline figures, derived from the data above so every number on the page agrees. */
+const STATS = (() => {
+  const paid = PAYMENTS.reduce((a, p) => a + p.amount, 0);
+  const owed = SITES.reduce((a, s) => a + (s.owed || 0), 0);
+  const claimed = SITES.filter(s => s.claimed).length;
+  return [
+    { prefix: '$', value: Math.round(paid + owed), label: 'Fees routed to websites', note: usdPlain(owed) + ' waiting to be claimed' },
+    { value: SITES.length, label: 'Websites earning fees', note: claimed + ' have claimed their payouts' },
+    { value: 92, unit: '%', label: 'Of every fee reaches the site', note: 'After network and payout costs' },
+    { value: PAYMENTS.length, label: 'Payouts settled', note: 'To banks, card accounts and USDC wallets' }
+  ];
+  function usdPlain(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+})();
