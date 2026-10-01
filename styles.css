@@ -657,3 +657,11 @@ input[type="range"] { accent-color: rgb(var(--accent)); width: 100%; }
 .side.buy { color: rgb(var(--good)); background: rgb(var(--good) / .12); }
 .side.sell { color: #e5484d; background: rgb(229 72 77 / .12); }
 img.mini { object-fit: cover; }
+
+/* ---- X (Twitter) link ---- */
+.x-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid rgb(var(--line)); border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: rgb(var(--fg)); background: rgb(var(--card)); transition: background-color .15s, border-color .15s, transform .2s var(--ease); flex-shrink: 0; }
+.x-btn:hover { border-color: rgb(var(--fg) / .3); background: rgb(var(--fg) / .06); transform: translateY(-1px); }
+.x-foot { display: inline-flex; align-items: center; gap: 6px; color: rgb(var(--muted)); }
+.x-foot:hover { color: rgb(var(--fg)); }
+@media (max-width: 1100px) { .x-btn span { display: none; } .x-btn { width: 36px; padding: 0; justify-content: center; } }
