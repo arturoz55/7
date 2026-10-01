@@ -1,4 +1,4 @@
-"""Generate Conduit's token logos (original artwork) as app-icon SVGs in logos/."""
+"""Generate Spout's token logos (original artwork) as app-icon SVGs in logos/."""
 import math, os
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'logos')

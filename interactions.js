@@ -1,4 +1,4 @@
-/* Conduit — interactions: the preview market, watchlist, preview trading,
+/* Spout — interactions: the preview market, watchlist, preview trading,
    card tilt, confetti and the hero spotlight. The market is simulated in the
    browser: a recurring pool of traders, log-normal trade sizes, momentum and
    the occasional whale. Trades never leave the browser. */
@@ -149,10 +149,10 @@ const Watch = (() => {
   let mem = null;
   const read = () => {
     if (mem) return mem;
-    try { mem = new Set(JSON.parse(localStorage.getItem('conduit:watch') || '[]')); } catch (e) { mem = new Set(); }
+    try { mem = new Set(JSON.parse(localStorage.getItem('spout:watch') || '[]')); } catch (e) { mem = new Set(); }
     return mem;
   };
-  const save = () => { if (Prefs.allowed()) try { localStorage.setItem('conduit:watch', JSON.stringify([...read()])); } catch (e) {} };
+  const save = () => { if (Prefs.allowed()) try { localStorage.setItem('spout:watch', JSON.stringify([...read()])); } catch (e) {} };
   return {
     has: (k) => read().has(k),
     list: () => [...read()],
@@ -162,15 +162,44 @@ const Watch = (() => {
 
 /* ---------------------------------------------------------------- holdings (preview, per wallet, this session) */
 const Holdings = {
-  key: () => 'conduit:hold:' + (Wallet.state.address || '').toLowerCase(),
-  get(ticker) { try { return JSON.parse(sessionStorage.getItem(this.key()) || '{}')[ticker] || 0; } catch (e) { return 0; } },
-  add(ticker, n) {
-    let all = {}; try { all = JSON.parse(sessionStorage.getItem(this.key()) || '{}'); } catch (e) {}
-    all[ticker] = Math.max(0, (all[ticker] || 0) + n);
+  key: () => 'spout:hold:' + (Wallet.state.address || '').toLowerCase(),
+  all() {
+    let raw = {}; try { raw = JSON.parse(sessionStorage.getItem(this.key()) || '{}'); } catch (e) {}
+    for (const k in raw) if (typeof raw[k] === 'number') raw[k] = { amt: raw[k], cost: 0 };
+    return raw;
+  },
+  get(ticker) { const p = this.all()[ticker]; return p ? p.amt : 0; },
+  /* n tokens in (positive) or out (negative); usdValue is what was paid or received. */
+  add(ticker, n, usdValue = 0) {
+    const all = this.all(), p = all[ticker] || { amt: 0, cost: 0 };
+    if (n >= 0) { p.amt += n; p.cost += usdValue; }
+    else { const frac = p.amt > 0 ? Math.min(1, -n / p.amt) : 1; p.cost *= 1 - frac; p.amt = Math.max(0, p.amt + n); }
+    if (p.amt < 1e-9) delete all[ticker]; else all[ticker] = p;
     try { sessionStorage.setItem(this.key(), JSON.stringify(all)); } catch (e) {}
-    return all[ticker];
-  }
+    if (n !== 0) this.log({ ticker, side: n > 0 ? 'buy' : 'sell', tokens: Math.abs(n), usd: usdValue, at: Date.now() });
+    return p.amt;
+  },
+  fills() { try { return JSON.parse(sessionStorage.getItem(this.key() + ':fills') || '[]'); } catch (e) { return []; } },
+  log(f) { const list = this.fills(); list.unshift(f); try { sessionStorage.setItem(this.key() + ':fills', JSON.stringify(list.slice(0, 50))); } catch (e) {} }
 };
+
+/* ---------------------------------------------------------------- watchlist alerts */
+const Alerts = (() => {
+  const base = new Map();
+  return {
+    init() {
+      Market.on((ev) => {
+        const t = ev.t; if (!Watch.has(t.ticker)) { base.delete(t.ticker); return; }
+        if (!base.has(t.ticker)) { base.set(t.ticker, t.mcap); return; }
+        const move = t.mcap / base.get(t.ticker) - 1;
+        if (Math.abs(move) >= 0.05) {
+          App.toast(`★ ${t.ticker} ${move > 0 ? 'up' : 'down'} ${(Math.abs(move) * 100).toFixed(1)}% · now ${fmtPrice(Market.price(t))}`);
+          base.set(t.ticker, t.mcap);
+        }
+      });
+    }
+  };
+})();
 
 /* ---------------------------------------------------------------- effects */
 const FX = (() => {

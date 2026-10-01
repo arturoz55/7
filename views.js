@@ -1,4 +1,4 @@
-/* Conduit — views. Each view returns { title, html, mount? }. */
+/* Spout — views. Each view returns { title, html, mount? }. */
 
 'use strict';
 
@@ -22,7 +22,7 @@ const ago = (ts) => {
 const color = (h, l = 46) => `hsl(${h} 62% ${l}%)`;
 const findSite = (d) => SITES.find(s => s.domain === d);
 const findToken = (a) => TOKENS.find(t => t.address.toLowerCase() === String(a).toLowerCase() || t.ticker.toLowerCase() === String(a).toLowerCase());
-const localTokens = () => { try { return JSON.parse(sessionStorage.getItem('conduit:launched') || '[]'); } catch (e) { return []; } };
+const localTokens = () => { try { return JSON.parse(sessionStorage.getItem('spout:launched') || '[]'); } catch (e) { return []; } };
 
 /* Generated cover art: a gradient with one of three patterns picked by a seed. */
 function art(hue, seed = '') {
@@ -106,12 +106,12 @@ VIEWS.home = () => {
   let w = 0; const W = (txt) => txt.split(' ').map(x => `<span class="w" style="animation-delay:${(w++) * 70 + 100}ms">${x}</span>`).join(' ');
 
   return {
-    title: 'Conduit — Point token fees at any website',
+    title: 'Spout — Point token fees at any website',
     html: `<div class="page">
       <section class="hero">
         <span class="pill"><span class="pill-swap" id="hero-pill">${avatar(SITES[0].name, SITES[0].hue, 'pill-av', SITES[0].logo, SITES[0].logoImg)}<b style="font-weight:500">${esc(SITES[0].name)}</b><span class="logo-mark logo-inline" style="--s:14px"></span><span class="muted">earns from fees</span></span></span>
         <h1 class="display">${W('Point token fees')} <br>${W('at any')} <span class="w" style="animation-delay:${(w++) * 70 + 100}ms"><span class="logo-mark logo-inline"></span></span> <span class="w rot" style="animation-delay:${(w++) * 70 + 100}ms" id="rot">${words.map((x, i) => `<span class="${i ? 'down' : ''}">${x}</span>`).join('')}</span></h1>
-        <p class="hero-sub">Every trade on a Conduit token pays a small creator fee. Instead of a wallet, that fee is pointed at a real website, converted to dollars and paid out to its bank, card account or USDC wallet.
+        <p class="hero-sub">Every trade on a Spout token pays a small creator fee. Instead of a wallet, that fee is pointed at a real website, converted to dollars and paid out to its bank, card account or USDC wallet.
           Built for <a class="chip" href="#/docs/how"><i></i>EVM chains</a> with <a class="chip" href="#/flow"><i style="background:rgb(var(--accent))"></i>open payouts</a></p>
         <div class="hero-cta"><a class="btn btn-solid shine" href="#/launch">Launch a token</a><a class="btn btn-line" href="#/docs">Read the docs</a></div>
         <div class="live-strip" aria-label="Live trades"><span class="live-dot">Live</span><div class="live-track" id="live-track"></div></div>
@@ -123,7 +123,7 @@ VIEWS.home = () => {
         <div class="stats">${STATS.map((s, i) => `<div class="stat"><span class="idx">0${i + 1}</span>${s.delta ? `<span class="delta">${s.delta}</span>` : ''}
           <div class="big num"><span data-count="${s.value}" data-dec="${s.decimals || 0}" data-prefix="${s.prefix || ''}">${s.prefix || ''}0</span><small>${s.unit || ''}${s.suffix ? ' ' + s.suffix : ''}</small></div>
           <div class="lab">${s.label}</div><div class="note">${s.note}</div></div>`).join('')}</div>
-        <p class="footnote">Totals update as payouts settle. Conduit is not affiliated with any payment processor. <a href="#/docs/disclosures">Disclosures</a>.</p>
+        <p class="footnote">Totals update as payouts settle. Spout is not affiliated with any payment processor. <a href="#/docs/disclosures">Disclosures</a>.</p>
       </section>
 
       <section class="bento rv">
@@ -173,7 +173,7 @@ VIEWS.home = () => {
       const pill = root.querySelector('#hero-pill'); const claimed = SITES.filter(s => s.claimed); let pi = 0;
       ctx.every(3200, () => { pill.classList.add('out'); ctx.after(300, () => { pi = (pi + 1) % claimed.length; const s = claimed[pi];
         pill.innerHTML = `${avatar(s.name, s.hue, 'pill-av', s.logo, s.logoImg)}<b style="font-weight:500">${esc(s.name)}</b><span class="logo-mark logo-inline" style="--s:14px"></span><span class="muted">earns from fees</span>`; pill.classList.remove('out'); }); });
-      /* typing demo */
+      /* typing animation */
       const tt = root.querySelector('#typer-text'), hit = root.querySelector('#typer-hit'); let si = 0;
       const typeOne = () => { const s = SITES[si++ % SITES.length]; let i = 0; hit.classList.add('hidden'); tt.textContent = '';
         const step = () => { if (i <= s.domain.length) { tt.textContent = s.domain.slice(0, i++); ctx.after(70, step); }
@@ -192,8 +192,8 @@ VIEWS.home = () => {
 };
 
 VIEWS.explore = (q) => ({
-  title: 'Explore — Conduit',
-  html: `<div class="page"><div class="page-head"><h1 class="display">Explore</h1><p>Every token listed on Conduit and the website its fees are pointed at.</p></div>
+  title: 'Explore — Spout',
+  html: `<div class="page"><div class="page-head"><h1 class="display">Explore</h1><p>Every token listed on Spout and the website its fees are pointed at.</p></div>
     <div class="bar"><div class="seg" id="ex-stage"><button aria-pressed="true" data-v="all">All</button><button aria-pressed="false" data-v="graduating">Graduating</button><button aria-pressed="false" data-v="bonded">Bonded</button><button aria-pressed="false" data-v="watch">★ Watchlist</button></div>
       <label class="field" style="margin:0;flex:1;max-width:280px">${icon('search')}<input id="ex-q" type="search" placeholder="Filter by name or site" value="${esc(q.q || '')}"></label>
       <select class="inp" id="ex-sort" style="width:auto;height:38px;margin-left:auto"><option value="mcap">Market cap</option><option value="paid">Most paid out</option><option value="new">Newest</option><option value="vol">24h volume</option></select></div>
@@ -217,7 +217,7 @@ VIEWS.explore = (q) => ({
 });
 
 VIEWS.merchants = () => ({
-  title: 'Merchants — Conduit',
+  title: 'Merchants — Spout',
   html: `<div class="page"><div class="page-head"><h1 class="display">Merchants</h1><p>Websites that tokens point their fees at. A site claims its payouts by proving it controls the domain.</p></div>
     <div class="dir-row seg" id="m-filter"><button aria-pressed="true" data-v="all">All</button><button aria-pressed="false" data-v="claimed">Claimed</button><button aria-pressed="false" data-v="open">Not claimed</button></div>
     <div class="tbl-wrap"><table class="tbl"><thead><tr><th><button data-k="name">Website ↕</button></th><th><button data-k="tokens">Tokens ↕</button></th><th><button data-k="received">Received ↕</button></th><th><button data-k="owed">Owed ↕</button></th><th>Status</th></tr></thead><tbody id="m-body"></tbody></table></div></div>`,
@@ -239,7 +239,7 @@ VIEWS.merchants = () => ({
 });
 
 VIEWS.payments = () => ({
-  title: 'Payments — Conduit',
+  title: 'Payments — Spout',
   html: `<div class="page"><div class="page-head"><h1 class="display">Payments</h1><p>Every payout from a token's fee vault to the website it names, newest first.</p></div>
     <div class="grid3" style="margin-bottom:16px">
       <div class="panel kpi"><div class="k">Paid out</div><div class="v num">${usd(PAYMENTS.reduce((a, p) => a + p.amount, 0))}</div></div>
@@ -262,7 +262,7 @@ VIEWS.analytics = () => {
   const sum = bySite.reduce((a, x) => a + x.v, 0);
   const vol = TOKENS.reduce((a, t) => a + t.mcap, 0);
   return {
-    title: 'Analytics — Conduit',
+    title: 'Analytics — Spout',
     html: `<div class="page"><div class="page-head"><h1 class="display">Analytics</h1><p>Fees routed, where they went and how the listed tokens are doing.</p></div>
       <div class="grid4"><div class="panel kpi"><div class="k">Fees routed (30d)</div><div class="v num">${usd(total, 0)}</div></div>
         <div class="panel kpi"><div class="k">Daily average</div><div class="v num">${usd(total / 30, 0)}</div></div>
@@ -279,7 +279,7 @@ VIEWS.analytics = () => {
 };
 
 VIEWS.flow = () => ({
-  title: 'Fee Flow — Conduit',
+  title: 'Fee Flow — Spout',
   html: `<div class="page"><div class="page-head"><h1 class="display">Fee Flow</h1><p>Follow a single trade's fee from the swap to the website that gets paid.</p></div>
     <div class="flow">${[
       ['01', 'Trade', 'Someone buys or sells a token. A 1% creator fee is taken on the swap.'],
@@ -308,7 +308,7 @@ VIEWS.flow = () => ({
 });
 
 VIEWS.launch = () => ({
-  title: 'Launch — Conduit',
+  title: 'Launch — Spout',
   html: `<div class="page"><div class="page-head"><h1 class="display">Launch a token</h1><p>Name it, point its fees at a website, and sign. It takes about a minute, and the website starts earning from the first trade.</p></div>
     <div class="launch-grid"><form class="panel form" id="lf" novalidate>
       <div class="grid2"><label>Name<input class="inp" name="name" maxlength="32" placeholder="Lumen" autocomplete="off"><span class="err" data-err="name"></span></label>
@@ -366,15 +366,15 @@ VIEWS.launch = () => ({
       if (!validate()) { const bad = f.querySelector('.bad'); if (bad) bad.focus(); return; }
       if (!Wallet.state.address) { App.openWallet(); return; }
       const v = val();
-      const msg = `Conduit launch\n\nToken: ${v.name} (${v.ticker})\nFees to: ${v.site}\nCreator fee: ${v.fee.toFixed(2)}%\nPaired with: ${pair}\nCreator: ${Wallet.state.address}\nIssued: ${new Date().toISOString()}\n\nThis signature records intent only. It does not move funds.`;
+      const msg = `Spout launch\n\nToken: ${v.name} (${v.ticker})\nFees to: ${v.site}\nCreator fee: ${v.fee.toFixed(2)}%\nPaired with: ${pair}\nCreator: ${Wallet.state.address}\nIssued: ${new Date().toISOString()}\n\nThis signature records intent only. It does not move funds.`;
       go.disabled = true; go.textContent = 'Check your wallet…';
       try {
         const sig = await Wallet.signMessage(msg);
         const t = { created: Date.now(), ticker: v.ticker, name: v.name, site: v.site, stage: 'graduating', mcap: 0, change: 0, curve: 0, pair, age: 'new', hue: hue(v.site),
           holders: 1, paid: 0, address: '0x' + sig.slice(2, 42), image, local: true, sig, creator: Wallet.state.address, fee: v.fee };
         const list = localTokens(); list.unshift(t);
-        try { sessionStorage.setItem('conduit:launched', JSON.stringify(list)); }
-        catch (err) { t.image = null; list[0] = t; try { sessionStorage.setItem('conduit:launched', JSON.stringify(list)); } catch (e2) {} }
+        try { sessionStorage.setItem('spout:launched', JSON.stringify(list)); }
+        catch (err) { t.image = null; list[0] = t; try { sessionStorage.setItem('spout:launched', JSON.stringify(list)); } catch (e2) {} }
         done.innerHTML = `<div class="panel" style="margin-top:12px"><b>${esc(v.ticker)} is listed</b><p class="muted" style="font-size:13px;margin-top:6px">Signed by ${short(Wallet.state.address)}. It now appears in Explore. During the preview, launches stay in this browser.</p>
           <p class="mono muted" style="font-size:11px;margin-top:8px;word-break:break-all">${esc(sig)}</p><a class="btn btn-line sm" style="margin-top:12px" href="#/token/${t.address}">View token →</a></div>`;
         App.toast(`${v.ticker} is listed`); FX.confetti();
@@ -392,9 +392,9 @@ function normSite(s) {
 }
 
 const DOCS = {
-  '': ['Overview', `<h1 class="display">Conduit docs</h1>
-    <p>Conduit lets anyone launch a token whose creator fees are paid to a website, not a wallet. The site does not need to know anything about crypto: it proves it owns its domain once and gets paid like any other income.</p>
-    <p class="callout">Conduit is in preview. Markets, trades and payouts are simulated so you can try every flow end to end. Wallet connection and message signing are real, and nothing is sent on-chain.</p>
+  '': ['Overview', `<h1 class="display">Spout docs</h1>
+    <p>Spout lets anyone launch a token whose creator fees are paid to a website, not a wallet. The site does not need to know anything about crypto: it proves it owns its domain once and gets paid like any other income.</p>
+    <p class="callout">Spout is in preview. Markets, trades and payouts are simulated so you can try every flow end to end. Wallet connection and message signing are real, and nothing is sent on-chain.</p>
     <h2>In one paragraph</h2><p>A token is created with one field that matters: <code>website</code>. Every trade pays a creator fee into a vault tagged with that domain. On a schedule the vault is swept and converted to USDC. Once the website claims it, the balance is paid out to the site's bank, card account or USDC wallet.</p>
     <h2>Next</h2><ul><li><a class="accent" href="#/docs/how">How fees are routed</a></li><li><a class="accent" href="#/docs/claim">Claiming payouts for a website</a></li><li><a class="accent" href="#/docs/wallets">Wallets and signing</a></li></ul>`],
   how: ['How it works', `<h1 class="display">How fees are routed</h1>
@@ -405,27 +405,27 @@ const DOCS = {
   claim: ['Claiming', `<h1 class="display">Claiming payouts for a website</h1>
     <p>Only whoever controls a domain can claim what it is owed. Ownership is proved with a DNS record, the same way search engines and email providers verify domains.</p>
     <h2>Steps</h2><ol><li>Open your site's page, for example <a class="accent" href="#/site/harbor.fm">harbor.fm</a>, and choose <em>Claim this site</em>.</li><li>Connect the wallet you want linked and sign the claim message.</li><li>Add the TXT record shown to your domain's DNS.</li><li>Choose a payout destination: bank, card account or USDC wallet.</li></ol>
-    <pre>conduit-verify.example.com.  TXT  "conduit-site=0xYOURADDRESS"</pre>`],
+    <pre>spout-verify.example.com.  TXT  "spout-site=0xYOURADDRESS"</pre>`],
   wallets: ['Wallets', `<h1 class="display">Wallets and signing</h1>
-    <p>Conduit discovers wallets with <code>EIP-6963</code>, so the list shows whatever is really installed in your browser. If none is found you'll see links to popular wallets.</p>
+    <p>Spout discovers wallets with <code>EIP-6963</code>, so the list shows whatever is really installed in your browser. If none is found you'll see links to popular wallets.</p>
     <p>Connecting calls <code>eth_requestAccounts</code> (<code>EIP-1193</code>) and shares one address. Launches and claims ask for a <code>personal_sign</code> message that describes exactly what you're agreeing to. Signing a message cannot move funds.</p>
     <p>Press <code>D</code> to switch theme and <code>/</code> to search anywhere.</p>`],
   terms: ['Terms', `<h1 class="display">Terms of use</h1>
     <p>Last updated 1 October 2026.</p>
-    <h2>The service</h2><p>Conduit routes token creator fees to websites. During the preview, markets, trades and payouts on this site are simulated, and nothing on it is an offer to buy or sell any asset.</p>
+    <h2>The service</h2><p>Spout routes token creator fees to websites. During the preview, markets, trades and payouts on this site are simulated, and nothing on it is an offer to buy or sell any asset.</p>
     <h2>Your responsibilities</h2><p>You are responsible for your wallet, your keys and anything you sign. Only name a website you are allowed to name; never imply that a site endorses a token when it does not.</p>
-    <h2>No warranty</h2><p>The service is provided “as is”, without warranty of any kind. To the extent permitted by law, Conduit is not liable for losses arising from use of the site.</p>
-    <h2>Privacy</h2><p>Conduit stores your consent choice, theme and sidebar state in your browser. If you choose “Just this visit”, only the consent choice is kept, and only for the session. There are no analytics or third-party cookies.</p>`],
+    <h2>No warranty</h2><p>The service is provided “as is”, without warranty of any kind. To the extent permitted by law, Spout is not liable for losses arising from use of the site.</p>
+    <h2>Privacy</h2><p>Spout stores your consent choice, theme and sidebar state in your browser. If you choose “Just this visit”, only the consent choice is kept, and only for the session. There are no analytics or third-party cookies.</p>`],
   disclosures: ['Disclosures', `<h1 class="display">Disclosures</h1>
     <ul><li>During the preview, the tokens, websites, trades, payouts and statistics on this site are simulated. Websites named here are fictional.</li>
-    <li>Conduit is not affiliated with, endorsed by or sponsored by any payment processor, exchange, blockchain or wallet named on this site.</li>
+    <li>Spout is not affiliated with, endorsed by or sponsored by any payment processor, exchange, blockchain or wallet named on this site.</li>
     <li>Trading tokens is risky. Prices can go to zero. Nothing here is financial advice.</li>
     <li>A website listed as a fee recipient has not necessarily agreed to be listed, unless it shows as <em>Claimed</em>.</li></ul>`],
   license: ['License', `<h1 class="display">License</h1>
     <p>The source code of this site is released under the MIT License.</p>
     <pre>MIT License
 
-Copyright (c) 2026 Conduit
+Copyright (c) 2026 Spout
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -451,7 +451,7 @@ VIEWS.docs = (q, sub = '') => {
   const doc = DOCS[sub] || DOCS[''];
   const key = DOCS[sub] ? sub : '';
   return {
-    title: doc[0] + ' — Conduit docs',
+    title: doc[0] + ' — Spout docs',
     html: `<div class="page"><div class="docs"><nav class="docs-nav" aria-label="Docs">${Object.entries(DOCS).map(([k, d]) =>
       `<a href="#/docs${k ? '/' + k : ''}" class="${k === key ? 'active' : ''}">${d[0]}</a>`).join('')}</nav><article class="prose">${doc[1]}</article></div></div>`
   };
@@ -462,7 +462,7 @@ VIEWS.token = (q, addr) => {
   if (!t) return VIEWS.missing();
   const s = findSite(t.site);
   return {
-    title: `${t.name} (${t.ticker}) — Conduit`,
+    title: `${t.name} (${t.ticker}) — Spout`,
     html: `<div class="page"><a class="link" href="#/explore">← Explore</a>
       <div class="tk-head"><div class="tk-id">${t.logoImg ? `<img src="${esc(t.logoImg)}" alt="" class="tk-logo">` : `<span class="mini tk-logo" style="background:${color(t.hue)}">${esc(t.ticker[0])}</span>`}
         <div><h1 class="display">${esc(t.name)} <span class="muted mono">${esc(t.ticker)}</span></h1>
@@ -610,7 +610,7 @@ VIEWS.token = (q, addr) => {
         ctx.after(dur, () => {
           go.classList.remove('busy');
           const usdVal = side === 'buy' ? a : qt.get;
-          Holdings.add(t.ticker, side === 'buy' ? qt.get : -a);
+          Holdings.add(t.ticker, side === 'buy' ? qt.get : -a, usdVal);
           Market.apply(t, side, usdVal, Wallet.state.address);
           App.toast(side === 'buy' ? `Confirmed · bought ${compact(qt.get)} ${t.ticker}` : `Confirmed · sold ${compact(a)} ${t.ticker} for ${usd(qt.get)}`);
           const last = root.querySelector('#tr-last'); last.hidden = false;
@@ -632,7 +632,7 @@ VIEWS.site = (q, domain) => {
   const toks = [...local, ...TOKENS.filter(t => t.site === domain)];
   const pays = PAYMENTS.filter(p => p.site === domain);
   return {
-    title: `${site.name} — Conduit`,
+    title: `${site.name} — Spout`,
     html: `<div class="page"><a class="link" href="#/merchants">← Merchants</a>
       <div class="mcard" style="margin-top:16px;cursor:default;transform:none"><div class="art" style="position:relative;height:130px">${art(site.hue, site.domain)}</div>
         <div class="body" style="padding:34px 20px 20px">${avatar(site.name, site.hue, 'av', site.logo, site.logoImg)}<h1 class="display" style="font-size:30px">${esc(site.name)}</h1><div class="dom">${esc(site.domain)}</div>
@@ -649,14 +649,14 @@ VIEWS.site = (q, domain) => {
       btn.addEventListener('click', async () => {
         if (!Wallet.state.address) return App.openWallet();
         const nonce = Array.from(crypto.getRandomValues(new Uint8Array(8)), b => b.toString(16).padStart(2, '0')).join('');
-        const msg = `Conduit site claim\n\nDomain: ${site.domain}\nPayout address: ${Wallet.state.address}\nNonce: ${nonce}\n\nSigning proves you hold this address. It does not move funds.`;
+        const msg = `Spout site claim\n\nDomain: ${site.domain}\nPayout address: ${Wallet.state.address}\nNonce: ${nonce}\n\nSigning proves you hold this address. It does not move funds.`;
         btn.disabled = true; btn.textContent = 'Check your wallet…';
         try {
           const sig = await Wallet.signMessage(msg);
           root.querySelector('#claim-out').innerHTML = `<div class="panel" style="margin-top:16px"><b>Signed. One step left.</b>
             <p class="muted" style="font-size:13px;margin:6px 0 10px">Add this TXT record to ${esc(site.domain)}'s DNS. Verification runs once the record is visible.</p>
-            <pre class="mono" style="font-size:12px;white-space:pre-wrap;word-break:break-all;margin:0;background:rgb(var(--bg));padding:12px;border-radius:10px;border:1px solid rgb(var(--line))">_conduit.${esc(site.domain)}  TXT  "conduit-site=${Wallet.state.address};sig=${sig.slice(0, 18)}…;n=${nonce}"</pre>
-            <button class="btn btn-line sm" style="margin-top:10px" data-copy="conduit-site=${Wallet.state.address};n=${nonce}">Copy record value</button></div>`;
+            <pre class="mono" style="font-size:12px;white-space:pre-wrap;word-break:break-all;margin:0;background:rgb(var(--bg));padding:12px;border-radius:10px;border:1px solid rgb(var(--line))">_spout.${esc(site.domain)}  TXT  "spout-site=${Wallet.state.address};sig=${sig.slice(0, 18)}…;n=${nonce}"</pre>
+            <button class="btn btn-line sm" style="margin-top:10px" data-copy="spout-site=${Wallet.state.address};n=${nonce}">Copy record value</button></div>`;
           btn.textContent = 'Awaiting DNS';
         } catch (err) { App.toast(err && err.code === 4001 ? 'Signature declined.' : (err && err.message) || 'Signing failed.'); btn.disabled = false; btn.textContent = 'Claim this site'; }
       });
@@ -664,9 +664,51 @@ VIEWS.site = (q, domain) => {
   };
 };
 
+VIEWS.portfolio = () => ({
+  title: 'Portfolio — Spout',
+  html: `<div class="page"><div class="page-head"><h1 class="display">Portfolio</h1><p>Your positions, what they're worth now and how much of every trade went to the websites behind them.</p></div><div id="pf"></div></div>`,
+  mount(root, ctx) {
+    const box = root.querySelector('#pf');
+    const all = () => [...TOKENS, ...localTokens()];
+    const paint = () => {
+      if (!Wallet.state.address) {
+        box.innerHTML = `<div class="empty"><b>Connect a wallet to see your portfolio</b><p>Your positions and trade history are tied to the address you connect.</p><button class="btn btn-accent sm" id="pf-connect" style="margin-top:16px">Connect wallet</button></div>`;
+        box.querySelector('#pf-connect').addEventListener('click', () => App.openWallet());
+        return;
+      }
+      const hold = Holdings.all();
+      const rows = Object.entries(hold).map(([k, p]) => { const t = all().find(x => x.ticker === k); if (!t) return null;
+        const value = p.amt * Market.price(t); return { t, amt: p.amt, cost: p.cost, value, pnl: value - p.cost }; }).filter(Boolean).sort((a, b) => b.value - a.value);
+      const value = rows.reduce((a, r) => a + r.value, 0), cost = rows.reduce((a, r) => a + r.cost, 0), pnl = value - cost;
+      const fills = Holdings.fills();
+      const toSites = fills.reduce((a, f) => { const t = all().find(x => x.ticker === f.ticker); return a + f.usd * ((t && t.fee) || 1) / 100; }, 0);
+      const sign = (n) => (n >= 0 ? '+' : '−') + usd(Math.abs(n));
+      box.innerHTML = `<div class="grid4">
+          <div class="panel kpi"><div class="k">Value</div><div class="v num">${usd(value)}</div></div>
+          <div class="panel kpi"><div class="k">Profit / loss</div><div class="v num ${pnl >= 0 ? 'good' : 'bad'}">${sign(pnl)}</div><div class="muted" style="font-size:12px;margin-top:2px">${cost ? ((pnl / cost) * 100).toFixed(2) + '%' : '—'}</div></div>
+          <div class="panel kpi"><div class="k">Positions</div><div class="v num">${rows.length}</div></div>
+          <div class="panel kpi"><div class="k">Sent to websites</div><div class="v num accent">${usd(toSites)}</div><div class="muted" style="font-size:12px;margin-top:2px">from your trading fees</div></div></div>
+        ${rows.length ? `<div class="tbl-wrap" style="margin-top:16px"><table class="tbl"><thead><tr><th>Token</th><th>Amount</th><th>Price</th><th>Value</th><th>Profit / loss</th><th></th></tr></thead><tbody>
+          ${rows.map(r => `<tr class="rowlink" data-href="#/token/${r.t.address}" data-tok="${esc(r.t.ticker)}"><td><div class="cell-tok">${r.t.logoImg ? `<img src="${esc(r.t.logoImg)}" alt="" class="mini">` : `<span class="mini" style="background:${color(r.t.hue)}">${esc(r.t.ticker[0])}</span>`}<div>${esc(r.t.name)}<div class="muted mono" style="font-size:11px">${esc(r.t.ticker)}</div></div></div></td>
+            <td class="num">${compact(r.amt)}</td><td class="num">${fmtPrice(Market.price(r.t))}</td><td class="num">${usd(r.value)}</td>
+            <td class="num ${r.pnl >= 0 ? 'good' : 'bad'}">${sign(r.pnl)} <small>${r.cost ? '(' + ((r.pnl / r.cost) * 100).toFixed(1) + '%)' : ''}</small></td>
+            <td><a class="btn btn-line sm" href="#/token/${r.t.address}">Trade</a></td></tr>`).join('')}</tbody></table></div>`
+          : `<div class="empty" style="margin-top:16px"><b>No positions yet</b><p>Buy a token and it shows up here, valued live.</p><a class="btn btn-solid sm" href="#/explore" style="margin-top:16px">Explore tokens</a></div>`}
+        <div class="bar" style="margin-top:28px"><h3 class="display">Your trades</h3></div>
+        ${fills.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Side</th><th>Token</th><th>Amount</th><th>Value</th><th>When</th></tr></thead><tbody>
+          ${fills.map(f => `<tr><td><span class="side ${f.side}">${f.side === 'buy' ? 'Buy' : 'Sell'}</span></td><td class="mono">${esc(f.ticker)}</td><td class="num">${compact(f.tokens)}</td><td class="num">${usd(f.usd)}</td><td class="muted" data-ago="${f.at}">${ago(f.at)}</td></tr>`).join('')}</tbody></table></div>`
+          : '<div class="empty"><b>No trades yet</b><p>Every buy and sell you make lands here.</p></div>'}`;
+    };
+    paint();
+    ctx.on(Wallet.on(paint));
+    let pending = false;
+    ctx.on(Market.on((ev) => { if (pending || !Holdings.get(ev.t.ticker)) return; pending = true; ctx.after(400, () => { pending = false; paint(); }); }));
+  }
+});
+
 VIEWS.missing = () => ({
-  title: 'Not found — Conduit',
+  title: 'Not found — Spout',
   html: `<div class="page"><div class="empty" style="margin-top:60px"><b style="font-size:22px">Nothing here</b><p>That page, token or website doesn't exist. Try search, or head back home.</p><a class="btn btn-solid sm" href="#/" style="margin-top:18px">Go home</a></div></div>`
 });
 
-const ROUTES = { '': 'home', explore: 'explore', merchants: 'merchants', payments: 'payments', analytics: 'analytics', launch: 'launch', flow: 'flow', docs: 'docs', token: 'token', site: 'site' };
+const ROUTES = { portfolio: 'portfolio', '': 'home', explore: 'explore', merchants: 'merchants', payments: 'payments', analytics: 'analytics', launch: 'launch', flow: 'flow', docs: 'docs', token: 'token', site: 'site' };

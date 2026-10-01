@@ -1,11 +1,11 @@
-/* Conduit — app shell: preferences, router, search, wallet UI, motion. */
+/* Spout — app shell: preferences, router, search, wallet UI, motion. */
 
 'use strict';
 
 const Prefs = {
-  consent() { try { return localStorage.getItem('conduit:consent') || sessionStorage.getItem('conduit:consent'); } catch (e) { return null; } },
+  consent() { try { return localStorage.getItem('spout:consent') || sessionStorage.getItem('spout:consent'); } catch (e) { return null; } },
   allowed() { return this.consent() === 'all'; },
-  set(k, v) { if (!this.allowed()) return; try { localStorage.setItem('conduit:' + k, v); } catch (e) {} }
+  set(k, v) { if (!this.allowed()) return; try { localStorage.setItem('spout:' + k, v); } catch (e) {} }
 };
 
 const App = (() => {
@@ -25,10 +25,10 @@ const App = (() => {
   function initConsent() {
     const choose = (v) => {
       try {
-        if (v === 'all') { localStorage.setItem('conduit:consent', 'all'); sessionStorage.removeItem('conduit:consent'); }
+        if (v === 'all') { localStorage.setItem('spout:consent', 'all'); sessionStorage.removeItem('spout:consent'); }
         else {
-          sessionStorage.setItem('conduit:consent', 'essential');
-          ['consent', 'theme', 'sidebar', 'wallet'].forEach(k => localStorage.removeItem('conduit:' + k));
+          sessionStorage.setItem('spout:consent', 'essential');
+          ['consent', 'theme', 'sidebar', 'wallet'].forEach(k => localStorage.removeItem('spout:' + k));
         }
       } catch (e) {}
       if (v === 'all') {
@@ -41,7 +41,7 @@ const App = (() => {
     document.getElementById('consent-all').addEventListener('click', () => choose('all'));
     document.getElementById('consent-min').addEventListener('click', () => choose('essential'));
     document.getElementById('privacy-btn').addEventListener('click', () => {
-      try { localStorage.removeItem('conduit:consent'); sessionStorage.removeItem('conduit:consent'); } catch (e) {}
+      try { localStorage.removeItem('spout:consent'); sessionStorage.removeItem('spout:consent'); } catch (e) {}
       root.classList.add('needs-consent');
       document.getElementById('consent-all').focus();
     });
@@ -269,7 +269,7 @@ const App = (() => {
     });
     /* follow the OS theme until the user picks one */
     matchMedia('(prefers-color-scheme: light)').addEventListener('change', (ev) => {
-      let saved = null; try { saved = localStorage.getItem('conduit:theme'); } catch (e) {}
+      let saved = null; try { saved = localStorage.getItem('spout:theme'); } catch (e) {}
       if (saved) return;
       root.classList.remove('light', 'dark'); root.classList.add(ev.matches ? 'light' : 'dark');
     });
@@ -295,6 +295,7 @@ const App = (() => {
     pv.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; pv.setAttribute('aria-expanded', String(!pop.hidden)); });
     document.addEventListener('click', (e) => { if (!e.target.closest('.preview-wrap')) { pop.hidden = true; pv.setAttribute('aria-expanded', 'false'); } });
     FX.initTilt();
+    Alerts.init();
     /* watchlist stars (inside links, so stop navigation) */
     document.addEventListener('click', (e) => {
       const b = e.target.closest('[data-star]'); if (!b) return;

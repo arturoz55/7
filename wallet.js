@@ -1,4 +1,4 @@
-/* Conduit — wallet.
+/* Spout — wallet.
    Discovery follows EIP-6963: each injected wallet announces itself with a name
    and icon. The connection is plain EIP-1193 (eth_requestAccounts). Nothing is
    signed or sent on connect. */
@@ -9,7 +9,7 @@ const Wallet = (() => {
   const providers = new Map();          // uuid -> { info, provider }
   const listeners = new Set();
   const state = { address: null, chainId: null, provider: null, info: null };
-  const KEY = 'conduit:wallet';
+  const KEY = 'spout:wallet';
 
   const emit = () => listeners.forEach(fn => { try { fn(state); } catch (e) { console.error(e); } });
 

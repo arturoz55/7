@@ -1,4 +1,4 @@
-/* Conduit — market data for the preview.
+/* Spout — market data for the preview.
    Tokens, websites and payouts are simulated (see interactions.js for the
    live market). Times are relative to page load so the feed always reads
    as current. */
@@ -12,11 +12,13 @@ const NAV = [
   { label: 'Payments',  href: '#/payments',  icon: 'dollar' },
   { label: 'Analytics', href: '#/analytics', icon: 'chart' },
   { label: 'Launch',    href: '#/launch',    icon: 'plus', cta: true },
+  { label: 'Portfolio', href: '#/portfolio', icon: 'wallet' },
   { label: 'Fee Flow',  href: '#/flow',      icon: 'flow' },
   { label: 'Docs',      href: '#/docs',      icon: 'code' }
 ];
 
 const ICONS = {
+  wallet: '<path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2z"/><circle cx="16" cy="14.5" r="1.3"/>',
   home:   '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   store:  '<path d="M4 9h16l-1.5-5h-13zM5 9v11h14V9M9 20v-6h6v6"/>',

@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Conduit — Point token fees at any website</title>
-<meta name="description" content="Launch a token and point its creator fees at a real website. Conduit collects the fees, converts them to dollars and pays the site that earned them.">
+<title>Spout — Point token fees at any website</title>
+<meta name="description" content="Launch a token and point its creator fees at a real website. Spout collects the fees, converts them to dollars and pays the site that earned them.">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B0B0C">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF">
-<meta property="og:title" content="Conduit — Point token fees at any website">
+<meta property="og:title" content="Spout — Point token fees at any website">
 <meta property="og:description" content="Launch a token and point its creator fees at a real website.">
 <meta property="og:type" content="website">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <!-- Theme and consent are resolved before first paint so nothing flashes. -->
-<script>(function(){var c=document.documentElement.classList,t;try{t=localStorage.getItem("conduit:theme")}catch(e){}var a=document.documentElement.getAttribute("data-theme");if(t!=="light"&&t!=="dark"&&(a==="light"||a==="dark"))t=a;if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}c.remove("dark","light");c.add(t);var k=null;try{k=localStorage.getItem("conduit:consent")}catch(e){}if(!k){try{k=sessionStorage.getItem("conduit:consent")}catch(e){}}if(!k)c.add("needs-consent");try{if(k==="all"&&localStorage.getItem("conduit:sidebar")==="collapsed")c.add("sb-collapsed")}catch(e){}})();</script>
+<script>(function(){var c=document.documentElement.classList,t;try{t=localStorage.getItem("spout:theme")}catch(e){}var a=document.documentElement.getAttribute("data-theme");if(t!=="light"&&t!=="dark"&&(a==="light"||a==="dark"))t=a;if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}c.remove("dark","light");c.add(t);var k=null;try{k=localStorage.getItem("spout:consent")}catch(e){}if(!k){try{k=sessionStorage.getItem("spout:consent")}catch(e){}}if(!k)c.add("needs-consent");try{if(k==="all"&&localStorage.getItem("spout:sidebar")==="collapsed")c.add("sb-collapsed")}catch(e){}})();</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
   <div class="consent-card">
     <span class="logo-mark lg" aria-hidden="true"></span>
     <h2 id="consent-title" class="display">Two things before you start</h2>
-    <p class="muted">Conduit remembers a couple of preferences in this browser. Nothing leaves your device and nothing follows you around the web.</p>
+    <p class="muted">Spout remembers a couple of preferences in this browser. Nothing leaves your device and nothing follows you around the web.</p>
     <ul class="consent-list">
       <li><i class="dot on"></i><span><b>Your answer here</b>, so this card stays closed.</span></li>
       <li><i class="dot on"></i><span><b>Theme and sidebar</b>, so the app opens the way you left it.</span></li>
@@ -47,7 +47,7 @@
       <h2 id="wm-title" class="display">Connect a wallet</h2>
       <button type="button" class="icon-btn ring accent" id="wm-close" aria-label="Close">✕</button>
     </header>
-    <p id="wm-help-text" class="sheet-help" hidden>Connecting shares one thing with Conduit: the address you choose. It can't move funds, and nothing is signed unless you are asked first.</p>
+    <p id="wm-help-text" class="sheet-help" hidden>Connecting shares one thing with Spout: the address you choose. It can't move funds, and nothing is signed unless you are asked first.</p>
     <label class="field search-field"><svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="wm-search" type="search" placeholder="Search wallets" aria-label="Search wallets"></label>
     <div id="wm-list" class="wallet-list" role="list"></div>
@@ -62,11 +62,11 @@
 
 <div class="shell">
   <aside class="sidebar" id="sidebar" aria-label="Primary">
-    <a href="#/" class="brand" aria-label="Conduit home"><span class="logo-mark" aria-hidden="true"></span><span class="brand-word">Conduit</span></a>
+    <a href="#/" class="brand" aria-label="Spout home"><span class="logo-mark" aria-hidden="true"></span><span class="brand-word">Spout</span></a>
     <nav id="nav" class="nav"></nav>
-    <a class="sb-profile" href="#/docs" aria-label="About Conduit">
+    <a class="sb-profile" href="#/docs" aria-label="About Spout">
       <span class="logo-mark sm" aria-hidden="true"></span>
-      <span class="sb-profile-txt"><b>Conduit</b><small>v1.0 · Preview</small></span>
+      <span class="sb-profile-txt"><b>Spout</b><small>v1.0 · Preview</small></span>
     </a>
     <button type="button" id="sb-toggle" class="sb-toggle" aria-label="Collapse sidebar">«</button>
   </aside>
@@ -83,7 +83,7 @@
       <div class="preview-wrap">
         <button type="button" class="preview-pill" id="preview-btn" aria-expanded="false" aria-controls="preview-pop"><i></i>Preview</button>
         <div class="popover" id="preview-pop" role="dialog" aria-label="About the preview" hidden>
-          <b>Conduit is in preview</b>
+          <b>Spout is in preview</b>
           <p>Markets, trades and payouts are simulated so you can try every flow. Connecting a wallet and signing messages are real, and nothing is ever sent on-chain.</p>
           <a class="link" href="#/docs/disclosures">Read the disclosures →</a>
         </div>
@@ -103,8 +103,8 @@
 
     <footer class="footer">
       <div class="foot-brand">
-        <b>Conduit</b>
-        <small>© <span id="year"></span> Conduit</small>
+        <b>Spout</b>
+        <small>© <span id="year"></span> Spout</small>
       </div>
       <div><h4>Product</h4><a href="#/explore">Explore</a><a href="#/merchants">Merchants</a><a href="#/payments">Payments</a><a href="#/analytics">Analytics</a><a href="#/launch">Launch</a></div>
       <div><h4>Protocol</h4><a href="#/flow">Fee Flow</a><a href="#/docs">Docs</a></div>
