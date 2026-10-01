@@ -84,6 +84,12 @@ function fakeAddr(seed) {
   return out;
 }
 
+/* Logo files for tokens whose brand you own or are licensed to use.
+   Put the file in logos/ and map the ticker to it, e.g.  LUMEN: 'logos/lumen.png'.
+   A token with no entry here (or whose file fails to load) shows its line-art mark. */
+const TOKEN_IMAGES = {
+};
+
 const TOKEN_LOGO = {'LUMEN': 'sun', 'PARCEL': 'box', 'FIELD': 'leaf', 'HARBOR': 'anchor', 'QUIET': 'moon', 'FORMS': 'check', 'ORBIT': 'orbit', 'GRAIN': 'wheat', 'KILN': 'flame', 'PATCH': 'wave', 'NORTH': 'compass', 'SPROUT': 'sprout', 'NOTES': 'book', 'POST': 'mail', 'KIT': 'bag', 'LUX': 'star'};
 
 const TOKENS = [
@@ -106,7 +112,7 @@ const TOKENS = [
 ].map(([ticker, name, site, stage, mcap, change, curve, pair, age]) => {
   const s = SITES.find(x => x.domain === site);
   const paid = s && s.claimed ? Math.round(mcap * 0.012 * 100) / 100 : 0;
-  return { ticker, name, site, stage, logo: TOKEN_LOGO[ticker], mcap, change, curve, pair, age, hue: s ? s.hue : 260,
+  return { ticker, name, site, stage, logo: TOKEN_LOGO[ticker], logoImg: TOKEN_IMAGES[ticker], mcap, change, curve, pair, age, hue: s ? s.hue : 260,
     holders: Math.round(Math.sqrt(mcap) * 3.1), paid, address: fakeAddr(ticker + site) };
 });
 

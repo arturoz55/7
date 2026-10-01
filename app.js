@@ -82,7 +82,7 @@ const App = (() => {
       const toks = [...localTokens(), ...TOKENS].filter(t => [t.name, t.ticker, t.site, t.address].some(x => x.toLowerCase().includes(q))).slice(0, 6);
       const sites = SITES.filter(s => [s.name, s.domain].some(x => x.toLowerCase().includes(q))).slice(0, 5);
       const pages = NAV.filter(n => n.label.toLowerCase().includes(q));
-      items = [...toks.map(t => ({ href: '#/token/' + t.address, html: `<span class="mini" style="background:${color(t.hue)}">${t.logo && MARKS[t.logo] ? mark(t.logo) : esc(t.ticker[0])}</span>${esc(t.name)}<small class="mono">${esc(t.ticker)}</small>`, g: 'Tokens' })),
+      items = [...toks.map(t => ({ href: '#/token/' + t.address, html: `<span class="mini" style="background:${color(t.hue)}">${t.logoImg ? `<img src="${esc(t.logoImg)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : t.logo && MARKS[t.logo] ? mark(t.logo) : esc(t.ticker[0])}</span>${esc(t.name)}<small class="mono">${esc(t.ticker)}</small>`, g: 'Tokens' })),
         ...sites.map(s => ({ href: '#/site/' + s.domain, html: `<span class="mini" style="background:${color(s.hue)}">${s.logo && MARKS[s.logo] ? mark(s.logo) : esc(s.name[0])}</span>${esc(s.name)}<small>${esc(s.domain)}</small>`, g: 'Websites' })),
         ...pages.map(n => ({ href: n.href, html: `<span class="mini" style="background:rgb(var(--fg)/.08);color:rgb(var(--fg))">${icon(n.icon, 'ic" style="width:14px;height:14px')}</span>${n.label}<small>Page</small>`, g: 'Pages' }))];
       if (/^0x[0-9a-f]{40}$/i.test(q) && !toks.length) items.push({ href: '#/token/' + q, html: `<span class="mini" style="background:rgb(var(--fg)/.08)">?</span>Look up address<small class="mono">${short(q)}</small>`, g: 'Address' });

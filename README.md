@@ -21,6 +21,18 @@ npx http-server -p 8080 .
 
 All tokens, websites and payments are fictional sample data (`data.js`).
 
+## Adding token logos
+
+Put each logo (PNG, JPG, SVG or WebP, ideally square) in `logos/`, then map the ticker in `TOKEN_IMAGES` at the top of `data.js`:
+
+```js
+const TOKEN_IMAGES = {
+  LUMEN: 'logos/lumen.png'
+};
+```
+
+Only use logos you own or have permission to use. A token without an entry keeps its line-art mark.
+
 ## Files
 
 | File | Purpose |

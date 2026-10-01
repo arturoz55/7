@@ -47,7 +47,7 @@ function tokenCard(t, i = 0) {
   return `<a class="tok" href="#/token/${t.address}" style="animation-delay:${i * 40}ms">
     <div class="tok-art">${t.image ? `<img src="${esc(t.image)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : art(t.hue, t.ticker)}
       <span class="badge tl"><i></i>${esc(t.pair)}</span><span class="badge tr">${esc(t.age)}</span>
-      ${t.image ? '' : t.logo && MARKS[t.logo] ? mark(t.logo, 'tok-mark') : `<span class="letter">${esc(t.ticker[0])}</span>`}
+      ${t.image ? '' : t.logoImg ? `<img class="tok-logo" src="${esc(t.logoImg)}" alt="${esc(t.name)} logo" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'letter',textContent:${esc(JSON.stringify(t.ticker[0]))}}))">` : t.logo && MARKS[t.logo] ? mark(t.logo, 'tok-mark') : `<span class="letter">${esc(t.ticker[0])}</span>`}
       <span class="badge bl">${s && s.logo ? `<span class="badge-av" style="background:${color(s.hue)}">${mark(s.logo)}</span>` : icon('globe', 'ic" style="width:10px;height:10px')}${esc(s ? s.name : t.site)}</span></div>
     <div class="tok-body">
       <div class="tok-name">${esc(t.name)} <small>${esc(t.ticker)}</small></div>
