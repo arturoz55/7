@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <!-- Theme and consent are resolved before first paint so nothing flashes. -->
-<script>(function(){var c=document.documentElement.classList,t;try{t=localStorage.getItem("conduit:theme")}catch(e){}if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}c.remove("dark","light");c.add(t);var k=null;try{k=localStorage.getItem("conduit:consent")}catch(e){}if(!k){try{k=sessionStorage.getItem("conduit:consent")}catch(e){}}if(!k)c.add("needs-consent");try{if(k==="all"&&localStorage.getItem("conduit:sidebar")==="collapsed")c.add("sb-collapsed")}catch(e){}})();</script>
+<script>(function(){var c=document.documentElement.classList,t;try{t=localStorage.getItem("conduit:theme")}catch(e){}var a=document.documentElement.getAttribute("data-theme");if(t!=="light"&&t!=="dark"&&(a==="light"||a==="dark"))t=a;if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}c.remove("dark","light");c.add(t);var k=null;try{k=localStorage.getItem("conduit:consent")}catch(e){}if(!k){try{k=sessionStorage.getItem("conduit:consent")}catch(e){}}if(!k)c.add("needs-consent");try{if(k==="all"&&localStorage.getItem("conduit:sidebar")==="collapsed")c.add("sb-collapsed")}catch(e){}})();</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>

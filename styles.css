@@ -435,7 +435,7 @@ input[type="range"] { accent-color: rgb(var(--accent)); width: 100%; }
 .foot-brand small { color: rgb(var(--muted)); font-size: 12px; max-width: 240px; }
 
 /* reveal on scroll */
-.rv { opacity: 0; transform: translateY(18px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+.rv { transform: translateY(18px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .rv.in { opacity: 1; transform: none; }
 
 #drawer-scrim { position: fixed; inset: 0; z-index: 55; background: rgb(0 0 0 / .45); }
